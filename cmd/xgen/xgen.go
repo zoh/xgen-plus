@@ -104,7 +104,7 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	files, err := xgen.GetFileList(cfg.I)
+	files, err := xgen.GetFileList(cfg.I, "")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

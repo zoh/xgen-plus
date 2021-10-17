@@ -77,6 +77,8 @@ type ComplexType struct {
 	Groups         []Group
 	AttributeGroup []AttributeGroup
 	Mixed          bool
+
+	EmbeddedStructName string
 }
 
 // Group (model group) definitions are provided primarily for reference from

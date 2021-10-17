@@ -19,24 +19,18 @@ import (
 )
 
 var (
-	testDir     = "data"
-	cSrcDir     = filepath.Join(testDir, "c")
-	cCodeDir    = filepath.Join(cSrcDir, "output")
-	goSrcDir    = filepath.Join(testDir, "go")
-	goCodeDir   = filepath.Join(goSrcDir, "output")
-	tsSrcDir    = filepath.Join(testDir, "ts")
-	tsCodeDir   = filepath.Join(tsSrcDir, "output")
-	javaSrcDir  = filepath.Join(testDir, "java")
-	javaCodeDir = filepath.Join(javaSrcDir, "output")
-	rsSrcDir    = filepath.Join(testDir, "rs")
-	rsCodeDir   = filepath.Join(rsSrcDir, "output")
-	xsdSrcDir   = filepath.Join(testDir, "xsd")
+	testDir   = "test"
+	goSrcDir  = filepath.Join(testDir, "go")
+	goCodeDir = filepath.Join(goSrcDir, "output")
+	tsSrcDir  = filepath.Join(testDir, "ts")
+	tsCodeDir = filepath.Join(tsSrcDir, "output")
+	xsdSrcDir = filepath.Join(testDir, "xsd")
 )
 
 func TestParseGo(t *testing.T) {
 	err := PrepareOutputDir(goCodeDir)
 	assert.NoError(t, err)
-	files, err := GetFileList(xsdSrcDir)
+	files, err := GetFileList(xsdSrcDir, "")
 	assert.NoError(t, err)
 	for _, file := range files {
 		parser := NewParser(&Options{
@@ -71,7 +65,7 @@ func TestParseGo(t *testing.T) {
 func TestParseTypeScript(t *testing.T) {
 	err := PrepareOutputDir(tsCodeDir)
 	assert.NoError(t, err)
-	files, err := GetFileList(xsdSrcDir)
+	files, err := GetFileList(xsdSrcDir, "")
 	assert.NoError(t, err)
 	for _, file := range files {
 		parser := NewParser(&Options{
@@ -100,86 +94,5 @@ func TestParseTypeScript(t *testing.T) {
 
 			assert.Equal(t, srcFile.Size(), genFile.Size(), fmt.Sprintf("error in generated code for %s", file))
 		}
-	}
-}
-
-func TestParseC(t *testing.T) {
-	err := PrepareOutputDir(cCodeDir)
-	assert.NoError(t, err)
-	files, err := GetFileList(xsdSrcDir)
-	assert.NoError(t, err)
-	for _, file := range files {
-		parser := NewParser(&Options{
-			FilePath:            file,
-			InputDir:            xsdSrcDir,
-			OutputDir:           cCodeDir,
-			Lang:                "C",
-			IncludeMap:          make(map[string]bool),
-			LocalNameNSMap:      make(map[string]string),
-			NSSchemaLocationMap: make(map[string]string),
-			ParseFileList:       make(map[string]bool),
-			ParseFileMap:        make(map[string][]interface{}),
-			ProtoTree:           make([]interface{}, 0),
-		})
-		err = parser.Parse()
-		assert.NoError(t, err)
-		if filepath.Ext(file) == ".xsd" {
-			srcCode := filepath.Join(cSrcDir, strings.TrimPrefix(file, xsdSrcDir)+".h")
-			genCode := filepath.Join(cCodeDir, strings.TrimPrefix(file, xsdSrcDir)+".h")
-
-			srcFile, err := os.Stat(srcCode)
-			assert.NoError(t, err)
-
-			genFile, err := os.Stat(genCode)
-			assert.NoError(t, err)
-
-			assert.Equal(t, srcFile.Size(), genFile.Size(), fmt.Sprintf("error in generated code for %s", file))
-		}
-	}
-}
-
-func TestParseJava(t *testing.T) {
-	err := PrepareOutputDir(javaCodeDir)
-	assert.NoError(t, err)
-	files, err := GetFileList(xsdSrcDir)
-	assert.NoError(t, err)
-	for _, file := range files {
-		parser := NewParser(&Options{
-			FilePath:            file,
-			InputDir:            xsdSrcDir,
-			OutputDir:           javaCodeDir,
-			Lang:                "Java",
-			IncludeMap:          make(map[string]bool),
-			LocalNameNSMap:      make(map[string]string),
-			NSSchemaLocationMap: make(map[string]string),
-			ParseFileList:       make(map[string]bool),
-			ParseFileMap:        make(map[string][]interface{}),
-			ProtoTree:           make([]interface{}, 0),
-		})
-		err = parser.Parse()
-		assert.NoError(t, err)
-	}
-}
-
-func TestParseRust(t *testing.T) {
-	err := PrepareOutputDir(rsCodeDir)
-	assert.NoError(t, err)
-	files, err := GetFileList(xsdSrcDir)
-	assert.NoError(t, err)
-	for _, file := range files {
-		parser := NewParser(&Options{
-			FilePath:            file,
-			InputDir:            xsdSrcDir,
-			OutputDir:           rsCodeDir,
-			Lang:                "Rust",
-			IncludeMap:          make(map[string]bool),
-			LocalNameNSMap:      make(map[string]string),
-			NSSchemaLocationMap: make(map[string]string),
-			ParseFileList:       make(map[string]bool),
-			ParseFileMap:        make(map[string][]interface{}),
-			ProtoTree:           make([]interface{}, 0),
-		})
-		err = parser.Parse()
-		assert.NoError(t, err)
 	}
 }

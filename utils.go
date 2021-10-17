@@ -35,22 +35,40 @@ func ToSnakeCase(input string) string {
 }
 
 // GetFileList get a list of file by given path.
-func GetFileList(path string) (files []string, err error) {
+func GetFileList(path string, mask string) (files []string, err error) {
 	var fi os.FileInfo
 	fi, err = os.Stat(path)
 	if err != nil {
 		return
 	}
+
+	var r *regexp.Regexp
+	if mask != "" {
+		r, err = regexp.Compile(mask)
+	}
+
 	if fi.IsDir() {
 		err = filepath.Walk(path, func(fp string, info os.FileInfo, err error) error {
-			files = append(files, fp)
+			if r != nil {
+				if r.MatchString(fp) {
+					files = append(files, fp)
+				}
+			} else {
+				files = append(files, fp)
+			}
 			return nil
 		})
 		if err != nil {
 			return
 		}
 	}
-	files = append(files, path)
+	if r != nil {
+		if r.MatchString(path) {
+			files = append(files, path)
+		}
+	} else {
+		files = append(files, path)
+	}
 	return
 }
 

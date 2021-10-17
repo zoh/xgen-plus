@@ -8,7 +8,9 @@
 
 package xgen
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+)
 
 // OnRestriction handles parsing event on the restriction start elements. The
 // restriction element defines restrictions on a simpleType, simpleContent, or
@@ -21,6 +23,7 @@ func (opt *Options) OnRestriction(ele xml.StartElement, protoTree []interface{})
 			if err != nil {
 				return
 			}
+
 			if opt.SimpleType.Peek() != nil {
 				opt.SimpleType.Peek().(*SimpleType).Base, err = opt.GetValueType(valueType, protoTree)
 				if err != nil {
@@ -29,6 +32,12 @@ func (opt *Options) OnRestriction(ele xml.StartElement, protoTree []interface{})
 				if opt.SimpleType.Peek().(*SimpleType).Name == "" {
 					opt.SimpleType.Peek().(*SimpleType).Name = attr.Value
 				}
+			}
+
+			if opt.ComplexType.Peek() != nil {
+				ct := opt.ComplexType.Peek().(*ComplexType)
+
+				ct.EmbeddedStructName = valueType
 			}
 		}
 	}

@@ -63,6 +63,8 @@ func (gen *CodeGenerator) GenGo() error {
 		if ele == nil {
 			continue
 		}
+
+		fmt.Println(reflect.TypeOf(ele).String())
 		funcName := fmt.Sprintf("Go%s", reflect.TypeOf(ele).String()[6:])
 		callFuncByName(gen, funcName, []reflect.Value{reflect.ValueOf(ele)})
 	}
@@ -174,11 +176,20 @@ func (gen *CodeGenerator) GoSimpleType(v *SimpleType) {
 func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 	if _, ok := gen.StructAST[v.Name]; !ok {
 		content := " struct {\n"
-		fieldName := genGoFieldName(v.Name)
-		if fieldName != v.Name {
-			gen.ImportEncodingXML = true
-			content += fmt.Sprintf("\tXMLName\txml.Name\t`xml:\"%s\"`\n", v.Name)
+
+		if v.EmbeddedStructName != "" {
+			content += "\t" + genGoFieldName(v.EmbeddedStructName) + "\n\n"
+		} else {
+			// Для всех ComplexType добавляем "BaseType"
+			content += "\t" + genGoFieldName("BaseType") + "\n\n"
+
 		}
+
+		fieldName := genGoFieldName(v.Name)
+		//if fieldName != v.Name {
+		//	gen.ImportEncodingXML = true
+		//	content += fmt.Sprintf("\tXMLName\txml.Name\t`xml:\"%s\"`\n", v.Name)
+		//}
 		for _, attrGroup := range v.AttributeGroup {
 			fieldType := getBasefromSimpleType(trimNSPrefix(attrGroup.Ref), gen.ProtoTree)
 			if fieldType == "time.Time" {
@@ -196,6 +207,8 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 			if fieldType == "time.Time" {
 				gen.ImportTime = true
 			}
+
+			// todo: this pine add json tag!
 			content += fmt.Sprintf("\t%sAttr\t%s\t`xml:\"%s,attr%s\"`\n", genGoFieldName(attribute.Name), fieldType, attribute.Name, optional)
 		}
 		for _, group := range v.Groups {
@@ -231,7 +244,7 @@ func (gen *CodeGenerator) GoGroup(v *Group) {
 		fieldName := genGoFieldName(v.Name)
 		if fieldName != v.Name {
 			gen.ImportEncodingXML = true
-			content += fmt.Sprintf("\tXMLName\txml.Name\t`xml:\"%s\"`\n", v.Name)
+			//content += fmt.Sprintf("\tXMLName\txml.Name\t`xml:\"%s\"`\n", v.Name)
 		}
 		for _, element := range v.Elements {
 			var plural string
@@ -264,7 +277,7 @@ func (gen *CodeGenerator) GoAttributeGroup(v *AttributeGroup) {
 		fieldName := genGoFieldName(v.Name)
 		if fieldName != v.Name {
 			gen.ImportEncodingXML = true
-			content += fmt.Sprintf("\tXMLName\txml.Name\t`xml:\"%s\"`\n", v.Name)
+			//content += fmt.Sprintf("\tXMLName\txml.Name\t`xml:\"%s\"`\n", v.Name)
 		}
 		for _, attribute := range v.Attributes {
 			var optional string

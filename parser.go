@@ -11,12 +11,15 @@ package xgen
 import (
 	"encoding/xml"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
 
 	"golang.org/x/net/html/charset"
+
+	"github.com/sirupsen/logrus"
 )
 
 // Options holds user-defined overrides and runtime data that are used when
@@ -49,6 +52,27 @@ type Options struct {
 	Attribute      *Stack
 	Group          *Stack
 	AttributeGroup *Stack
+
+	codeGenerator *CodeGenerator
+
+	log logrus.Ext1FieldLogger
+}
+
+func NewOptions(filePath, xsdSrcDir, codeDir string, lang string) *Options {
+	return &Options{
+		FilePath:            filePath,
+		InputDir:            xsdSrcDir,
+		OutputDir:           codeDir,
+		Lang:                lang,
+		IncludeMap:          make(map[string]bool),
+		LocalNameNSMap:      make(map[string]string),
+		NSSchemaLocationMap: make(map[string]string),
+		ParseFileList:       make(map[string]bool),
+		ParseFileMap:        make(map[string][]interface{}),
+		ProtoTree:           make([]interface{}, 0),
+
+		log: logrus.New().WithField("pkg", "xgen-plus"),
+	}
 }
 
 // NewParser creates a new parser options for the Parse. Useful for XML schema
@@ -104,13 +128,11 @@ func (opt *Options) Parse() (err error) {
 
 		switch element := token.(type) {
 		case xml.StartElement:
-
 			opt.InElement = element.Name.Local
 			funcName := fmt.Sprintf("On%s", MakeFirstUpperCase(opt.InElement))
 			if err = callFuncByName(opt, funcName, []reflect.Value{reflect.ValueOf(element), reflect.ValueOf(opt.ProtoTree)}); err != nil {
 				return
 			}
-
 		case xml.EndElement:
 			funcName := fmt.Sprintf("End%s", MakeFirstUpperCase(element.Name.Local))
 			if err = callFuncByName(opt, funcName, []reflect.Value{reflect.ValueOf(element), reflect.ValueOf(opt.ProtoTree)}); err != nil {
@@ -122,31 +144,45 @@ func (opt *Options) Parse() (err error) {
 			}
 		default:
 		}
-
 	}
 	defer xmlFile.Close()
 
 	if !opt.Extract {
-		opt.ParseFileList[opt.FilePath] = true
-		opt.ParseFileMap[opt.FilePath] = opt.ProtoTree
-		path := filepath.Join(opt.OutputDir, strings.TrimPrefix(opt.FilePath, opt.InputDir))
-		if err := PrepareOutputDir(filepath.Dir(path)); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+		if err := opt.createCodeGenerator(); err != nil {
+			log.Fatalln(err)
 		}
-		generator := &CodeGenerator{
-			Lang:      opt.Lang,
-			Package:   opt.Package,
-			File:      path,
-			ProtoTree: opt.ProtoTree,
-			StructAST: map[string]string{},
-		}
-		funcName := fmt.Sprintf("Gen%s", MakeFirstUpperCase(opt.Lang))
-		if err = callFuncByName(generator, funcName, []reflect.Value{}); err != nil {
-			return
+		if err := opt.Gen(); err != nil {
+			return err
 		}
 	}
 	return
+}
+
+func (opt *Options) createCodeGenerator() error {
+	opt.ParseFileList[opt.FilePath] = true
+	opt.ParseFileMap[opt.FilePath] = opt.ProtoTree
+	//
+	path := filepath.Join(opt.OutputDir, strings.TrimPrefix(opt.FilePath, opt.InputDir))
+	if err := PrepareOutputDir(filepath.Dir(path)); err != nil {
+		return err
+	}
+	opt.codeGenerator = &CodeGenerator{
+		Lang:      opt.Lang,
+		Package:   opt.Package,
+		File:      strings.ReplaceAll(path, ".xsd", ""),
+		ProtoTree: opt.ProtoTree,
+		StructAST: map[string]string{},
+	}
+	return nil
+}
+
+func (opt *Options) Gen() error {
+	funcName := fmt.Sprintf("Gen%s", MakeFirstUpperCase(opt.Lang))
+	if err := callFuncByName(opt.codeGenerator, funcName, []reflect.Value{}); err != nil {
+		log.Printf("Error %v", err)
+		return err
+	}
+	return nil
 }
 
 // GetValueType convert XSD schema value type to the build-in type for the
