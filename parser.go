@@ -53,7 +53,7 @@ type Options struct {
 	Group          *Stack
 	AttributeGroup *Stack
 
-	codeGenerator *CodeGenerator
+	CodeGenerator *CodeGenerator
 
 	log logrus.Ext1FieldLogger
 }
@@ -166,19 +166,22 @@ func (opt *Options) createCodeGenerator() error {
 	if err := PrepareOutputDir(filepath.Dir(path)); err != nil {
 		return err
 	}
-	opt.codeGenerator = &CodeGenerator{
+	opt.CodeGenerator = &CodeGenerator{
 		Lang:      opt.Lang,
 		Package:   opt.Package,
 		File:      strings.ReplaceAll(path, ".xsd", ""),
 		ProtoTree: opt.ProtoTree,
 		StructAST: map[string]string{},
+
+		log:     logrus.New(),
+		JsonTag: true,
 	}
 	return nil
 }
 
 func (opt *Options) Gen() error {
 	funcName := fmt.Sprintf("Gen%s", MakeFirstUpperCase(opt.Lang))
-	if err := callFuncByName(opt.codeGenerator, funcName, []reflect.Value{}); err != nil {
+	if err := callFuncByName(opt.CodeGenerator, funcName, []reflect.Value{}); err != nil {
 		log.Printf("Error %v", err)
 		return err
 	}

@@ -8,7 +8,9 @@
 
 package xgen
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+)
 
 // OnAttribute handles parsing event on the attribute start elements. All
 // attributes are declared as simple types.
@@ -28,9 +30,13 @@ func (opt *Options) OnAttribute(ele xml.StartElement, protoTree []interface{}) (
 			attribute.Name = attr.Value
 		}
 		if attr.Name.Local == "type" {
-			attribute.Type, err = opt.GetValueType(attr.Value, protoTree)
-			if err != nil {
-				return
+			if ns := getNSPrefix(attr.Value); ns == "" {
+				attribute.Type = attr.Value
+			} else {
+				attribute.Type, err = opt.GetValueType(attr.Value, protoTree)
+				if err != nil {
+					return
+				}
 			}
 		}
 		if attr.Name.Local == "use" {

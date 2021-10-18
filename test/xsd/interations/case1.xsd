@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://www.iec.ch/61850/2003/SCL" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.iec.ch/61850/2003/SCL" elementFormDefault="qualified"
+           attributeFormDefault="unqualified" version="2007B4">
+
+    <xs:simpleType name="tAcsiName">
+        <xs:restriction base="xs:Name">
+            <xs:pattern value="[A-Za-z][0-9A-Za-z_]*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="tIEDName">
+        <xs:restriction base="tAcsiName">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="64"/>
+            <xs:pattern value="[A-Za-z][0-9A-Za-z_]{0,2}"/>
+            <xs:pattern value="[A-Za-z][0-9A-Za-z_]{4,63}"/>
+            <xs:pattern value="[A-MO-Za-z][0-9A-Za-z_]{3}"/>
+            <xs:pattern value="N[0-9A-Za-np-z_][0-9A-Za-z_]{2}"/>
+            <xs:pattern value="No[0-9A-Za-mo-z_][0-9A-Za-z_]"/>
+            <xs:pattern value="Non[0-9A-Za-df-z_]"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:complexType name="tPrivate" mixed="true">
+        <xs:complexContent>
+            <xs:extension base="tAnyContentFromOtherNamespace">
+                <xs:attribute name="typesss" type="xs:normalizedString" use="optional"/>
+                <xs:attribute name="name" type="tIEDName" use="optional"/>
+                <xs:attribute name="type" use="required">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:normalizedString">
+                            <xs:minLength value="1"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+                <xs:attribute name="source" type="xs:anyURI" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

@@ -96,3 +96,37 @@ func TestParseTypeScript(t *testing.T) {
 		}
 	}
 }
+
+type A int
+type B string
+
+type Union struct {
+	A
+	B
+}
+
+type SCLType struct {
+	XMLName struct{} `xml:"SCL"`
+
+	Revision string `xml:"revision,attr"`
+	Version  string `xml:"version,attr"`
+	Release  Union  `xml:"release,attr"`
+}
+
+//
+//func TestTest(t *testing.T) {
+//	raw := []byte(`<?xml version="1.0" encoding="utf-8"?>
+//<SCL version="2007" release="4" revision="B">
+//	<Header id="Substation1" version="1" revision="0" toolID="SCT" nameStructure="IEDName"/>
+//</SCL>`)
+//
+//	var model SCLType
+//	err := xml.Unmarshal(raw, &model)
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//
+//	model.Release.A
+//
+//	fmt.Println(model)
+//}

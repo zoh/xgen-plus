@@ -34,11 +34,13 @@ func (opt *Options) OnRestriction(ele xml.StartElement, protoTree []interface{})
 				}
 			}
 
-			if opt.ComplexType.Peek() != nil {
-				ct := opt.ComplexType.Peek().(*ComplexType)
-
-				ct.EmbeddedStructName = valueType
-			}
+			//if opt.ComplexType.Peek() != nil {
+			//	if attr.Value == "xs:token" {
+			//		fmt.Println(attr.Value, valueType, "+>")
+			//	}
+			//	ct := opt.ComplexType.Peek().(*ComplexType)
+			//	ct.EmbeddedStructName = valueType
+			//}
 		}
 	}
 	return

@@ -10,7 +10,7 @@ package xgen
 
 import "regexp"
 
-// SimpleType definitions provide for constraining character information item
+// SimpleTypeInside definitions provide for constraining character information item
 // [children] of element and attribute information items.
 // https://www.w3.org/TR/xmlschema-1/#Simple_Type_Definitions
 type SimpleType struct {
@@ -22,6 +22,8 @@ type SimpleType struct {
 	Union       bool
 	MemberTypes map[string]string
 	Restriction Restriction
+
+	OrigName string
 }
 
 // Element declarations provide for: Local validation of element information
@@ -54,6 +56,12 @@ type Attribute struct {
 	Plural   bool
 	Default  string
 	Optional bool
+
+	// {value constraint}
+	//Optional. A pair consisting of a value and one of default, fixed.
+	Fixed string
+
+	SimpleTypeInside *SimpleType
 }
 
 // ComplexType definitions are identified by their {name} and {target
