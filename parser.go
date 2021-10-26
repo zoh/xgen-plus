@@ -163,6 +163,9 @@ func (opt *Options) createCodeGenerator() error {
 	opt.ParseFileMap[opt.FilePath] = opt.ProtoTree
 	//
 	path := filepath.Join(opt.OutputDir, strings.TrimPrefix(opt.FilePath, opt.InputDir))
+
+	logrus.Infoln("OutputDir", filepath.Dir(path))
+
 	if err := PrepareOutputDir(filepath.Dir(path)); err != nil {
 		return err
 	}
@@ -175,6 +178,9 @@ func (opt *Options) createCodeGenerator() error {
 
 		log:     logrus.New(),
 		JsonTag: true,
+
+		OutputDir:    filepath.Dir(path),
+		BaseTypeFile: true,
 	}
 	return nil
 }

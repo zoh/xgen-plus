@@ -10,6 +10,9 @@ package xgen
 
 import "encoding/xml"
 
+
+// todo: implement OnPattern
+
 // EndPattern handles parsing event on the pattern end elements. Pattern
 // defines the exact sequence of characters that are acceptable.
 func (opt *Options) EndPattern(ele xml.EndElement, protoTree []interface{}) (err error) {

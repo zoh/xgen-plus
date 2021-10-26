@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns="http://www.iec.ch/61850/2003/SCL" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           targetNamespace="http://www.iec.ch/61850/2003/SCL" elementFormDefault="qualified"
-           attributeFormDefault="unqualified" version="2007B4">
+<xs:schema
+        xmlns="http://www.iec.ch/61850/2003/SCL"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.iec.ch/61850/2003/SCL"
+        elementFormDefault="qualified"
+        version="2007B4"
+>
+
+    <xs:include schemaLocation="SCL_BaseTypes.xsd"/>
 
     <xs:simpleType name="tAcsiName">
         <xs:restriction base="xs:Name">
@@ -23,6 +29,22 @@
     </xs:simpleType>
 
 
+    <xs:simpleType name="tIEDNameIsNone">
+        <xs:restriction base="tAcsiName">
+            <xs:pattern value="None"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="tIEDNameOrNone">
+        <xs:union memberTypes="tIEDName tIEDNameIsNone"/>
+    </xs:simpleType>
+
+    <xs:complexType name="tAnyContentFromOtherNamespace" abstract="true" mixed="true">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:any namespace="##other" processContents="lax"/>
+        </xs:sequence>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+    </xs:complexType>
+
     <xs:complexType name="tPrivate" mixed="true">
         <xs:complexContent>
             <xs:extension base="tAnyContentFromOtherNamespace">
@@ -36,6 +58,54 @@
                     </xs:simpleType>
                 </xs:attribute>
                 <xs:attribute name="source" type="xs:anyURI" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <xs:complexType name="tVal">
+        <xs:simpleContent>
+            <xs:extension base="xs:normalizedString">
+                <xs:attribute name="sGroup" type="xs:unsignedInt" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+
+    <xs:complexType name="tIDNaming" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="tBaseElement">
+                <xs:attribute name="id" type="tID" use="required"/>
+                <xs:attributeGroup ref="agDesc"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="tBaseElement" abstract="true">
+        <xs:sequence>
+            <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Text" type="tText" minOccurs="0"/>
+            <xs:element name="Private" type="tPrivate" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+    </xs:complexType>
+
+    <xs:simpleType name="tID">
+        <xs:restriction base="xs:token">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="255"/>
+            <xs:pattern value="\S+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:attributeGroup name="agDesc">
+        <xs:attribute name="desc" type="xs:normalizedString" use="optional" default=""/>
+    </xs:attributeGroup>
+
+    <xs:complexType name="tText" mixed="true">
+        <xs:complexContent>
+            <xs:extension base="tAnyContentFromOtherNamespace">
+                <xs:attribute name="source" type="xs:anyURI" use="optional"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

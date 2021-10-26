@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://www.iec.ch/61850/2003/SCL" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.iec.ch/61850/2003/SCL" elementFormDefault="qualified"
+           attributeFormDefault="unqualified" version="2007B4">
+
+    <xs:include schemaLocation="SCL_BaseTypes.xsd"/>
+
+    <xs:complexType name="tControlBlock" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="xs:anyURI">
+                <xs:attribute name="ldInst" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

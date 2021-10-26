@@ -44,6 +44,10 @@ func (opt *Options) OnAttribute(ele xml.StartElement, protoTree []interface{}) (
 				attribute.Optional = false
 			}
 		}
+
+		if attr.Name.Local == "fixed" {
+			attribute.Fixed = attr.Value
+		}
 	}
 	if opt.ComplexType.Len() > 0 {
 		opt.ComplexType.Peek().(*ComplexType).Attributes = append(opt.ComplexType.Peek().(*ComplexType).Attributes, attribute)

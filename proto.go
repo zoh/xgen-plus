@@ -14,9 +14,12 @@ import "regexp"
 // [children] of element and attribute information items.
 // https://www.w3.org/TR/xmlschema-1/#Simple_Type_Definitions
 type SimpleType struct {
-	Doc         string
-	Name        string
-	Base        string
+	Doc  string
+	Name string
+	Base string
+
+	// то что записано в схеме
+	OrigBase    string
 	Anonymous   bool
 	List        bool
 	Union       bool
@@ -59,7 +62,7 @@ type Attribute struct {
 
 	// {value constraint}
 	//Optional. A pair consisting of a value and one of default, fixed.
-	Fixed string
+	Fixed string // todo: Implement for validation
 
 	SimpleTypeInside *SimpleType
 }
@@ -87,6 +90,9 @@ type ComplexType struct {
 	Mixed          bool
 
 	EmbeddedStructName string
+
+	AnyElements   bool
+	AnyAttributes bool
 }
 
 // Group (model group) definitions are provided primarily for reference from

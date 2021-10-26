@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+        xmlns="http://www.iec.ch/61850/2003/SCL" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.iec.ch/61850/2003/SCL" elementFormDefault="qualified"
+        attributeFormDefault="unqualified" version="2007B4"
+>
+
+    <xs:simpleType name="tAcsiName">
+        <xs:restriction base="xs:Name">
+            <xs:pattern value="[A-Za-z][0-9A-Za-z_]*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="tIEDNameIsNone">
+        <xs:restriction base="tAcsiName">
+            <xs:pattern value="None"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="tIEDNameOrNone">
+        <xs:union memberTypes="tIEDName tIEDNameIsNone"/>
+    </xs:simpleType>
+
+    <xs:simpleType name="tIEDName">
+        <xs:restriction base="tAcsiName">
+            <xs:maxLength value="64"/>
+            <xs:pattern value="[A-Za-z][0-9A-Za-z_]{0,2}"/>
+            <xs:pattern value="[A-Za-z][0-9A-Za-z_]{4,63}"/>
+            <xs:pattern value="[A-MO-Za-z][0-9A-Za-z_]{3}"/>
+            <xs:pattern value="N[0-9A-Za-np-z_][0-9A-Za-z_]{2}"/>
+            <xs:pattern value="No[0-9A-Za-mo-z_][0-9A-Za-z_]"/>
+            <xs:pattern value="Non[0-9A-Za-df-z_]"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:complexType name="ComplexType1">
+        <xs:complexContent>
+            <xs:extension base="tIEDNameOrNone">
+                <xs:attribute name="type" type="xs:normalizedString" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+
+    <xs:complexType name="tBaseElement" abstract="true">
+        <xs:sequence>
+            <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Text" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+    </xs:complexType>
+</xs:schema>

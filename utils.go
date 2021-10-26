@@ -158,10 +158,29 @@ func getBuildInTypeByLang(value, lang string) (buildType string, ok bool) {
 	return
 }
 
+func isSimpleType(baseType string, lang string) bool {
+	var supportLang = map[string]int{
+		"Go":         0,
+		"TypeScript": 1,
+		"C":          2,
+		"Java":       3,
+		"Rust":       4,
+	}
+
+	for _, v := range BuildInTypes {
+		if v[supportLang[lang]] == baseType {
+			return true
+		}
+	}
+
+	return false
+}
+
 func getBasefromSimpleType(name string, XSDSchema []interface{}) string {
 	for _, ele := range XSDSchema {
 		switch v := ele.(type) {
 		case *SimpleType:
+			// fix: Union тоже сделаем как простой тип
 			if !v.List && !v.Union && v.Name == name {
 				return v.Base
 			}
@@ -177,6 +196,22 @@ func getBasefromSimpleType(name string, XSDSchema []interface{}) string {
 	}
 	return name
 }
+
+
+func getSimpleType(name string, XSDSchema []interface{}) (*SimpleType, bool) {
+	for _, ele := range XSDSchema {
+		switch v := ele.(type) {
+		case *SimpleType:
+			// fix: Union тоже сделаем как простой тип
+			if v.Union && v.Name == name {
+				return v, true
+			}
+		}
+	}
+	return nil, false
+}
+
+
 
 func getNSPrefix(str string) (ns string) {
 	split := strings.Split(str, ":")
@@ -196,8 +231,6 @@ func trimNSPrefix(str string) (name string) {
 	name = str
 	return
 }
-
-
 
 // MakeFirstUpperCase make the first letter of a string uppercase.
 func MakeFirstUpperCase(s string) string {

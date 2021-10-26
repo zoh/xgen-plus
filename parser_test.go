@@ -9,6 +9,7 @@
 package xgen
 
 import (
+	"encoding/xml"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -97,36 +98,40 @@ func TestParseTypeScript(t *testing.T) {
 	}
 }
 
-type A int
-type B string
-
-type Union struct {
-	A
-	B
-}
+type NormalizedString string
 
 type SCLType struct {
-	XMLName struct{} `xml:"SCL"`
+	NormalizedString `xml:",chardata" json:",omitempty"`
 
 	Revision string `xml:"revision,attr"`
 	Version  string `xml:"version,attr"`
-	Release  Union  `xml:"release,attr"`
+	//Release  Union  `xml:"release,attr"`
 }
 
-//
-//func TestTest(t *testing.T) {
-//	raw := []byte(`<?xml version="1.0" encoding="utf-8"?>
-//<SCL version="2007" release="4" revision="B">
-//	<Header id="Substation1" version="1" revision="0" toolID="SCT" nameStructure="IEDName"/>
-//</SCL>`)
-//
-//	var model SCLType
-//	err := xml.Unmarshal(raw, &model)
-//	if err != nil {
-//		t.Fatal(err)
-//	}
-//
-//	model.Release.A
-//
-//	fmt.Println(model)
-//}
+func TestTest(t *testing.T) {
+	raw := []byte(`<?xml version="1.0" encoding="utf-8"?>
+<SCL version="2007" release="4" revision="B">Test LOL</SCL>`)
+
+	var model SCLType
+	err := xml.Unmarshal(raw, &model)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Printf("%#v", model)
+/*
+	type TIEDName struct {
+		_ string
+	}
+
+	type TPrivate struct {
+		TypesssAttr *string          `xml:"typesss,attr,omitempty" json:"typesss,omitempty"`
+		NameAttr    *TIEDName         `xml:"name,attr,omitempty" json:"name,omitempty"`
+		TypeAttr    NormalizedString `xml:"type,attr" json:"type"`
+		SourceAttr  string           `xml:"source,attr" json:"source"`
+	}
+
+	v := TPrivate{}
+
+	v.NameAttr._ = "asdasd"*/
+}

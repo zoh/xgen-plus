@@ -11,7 +11,6 @@ package xgen
 import (
 	"encoding/xml"
 	"errors"
-	"strings"
 )
 
 func (opt *Options) OnExtension(ele xml.StartElement, protoTree []interface{}) (err error) {
@@ -31,15 +30,7 @@ func (opt *Options) OnExtension(ele xml.StartElement, protoTree []interface{}) (
 			break
 		}
 	}
-	if baseType == "" {
-		baseType = "BaseType"
-	}
-
-	if strings.HasPrefix(baseType, "xs:") {
-		baseType = "BaseType"
-	} else {
-		ct.EmbeddedStructName = baseType
-	}
+	ct.EmbeddedStructName = baseType
 
 	return
 }

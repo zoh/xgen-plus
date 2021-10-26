@@ -11,7 +11,9 @@ package xgen
 import (
 	"bufio"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -21,9 +23,35 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+var testLogger = logrus.New().WithField("mode", "unit-test")
+
 func TestParseSCL(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Parser Suite SCL document")
+}
+
+func TestParseSCL2(t *testing.T) {
+	err := PrepareOutputDir(goCodeDir)
+	assert.NoError(t, err)
+
+	files, err := GetFileList("test/complex_xsd", "SCL.*")
+	assert.NoError(t, err)
+	//
+	for _, file := range files {
+		parser := NewParser(NewOptions(file, xsdSrcDir, goCodeDir, "Go"))
+		err = parser.Parse()
+		assert.NoError(t, err, file)
+
+		logrus.Warnln(_membersTypeFromUnion, file)
+		_membersTypeFromUnion = struct {
+			membersType map[string]int
+
+			lookUpSimpleTypes map[string]struct{}
+		}{
+			membersType:       map[string]int{},
+			lookUpSimpleTypes: map[string]struct{}{},
+		}
+	}
 }
 
 /*
@@ -51,11 +79,22 @@ var _ = Describe("Parser and Gen SCL_Substation", func() {
 
 		files, err := GetFileList("test/complex_xsd", "SCL.*")
 		assert.NoError(t, err)
+		//
 		for _, file := range files {
 			parser := NewParser(NewOptions(file, xsdSrcDir, goCodeDir, "Go"))
 			err = parser.Parse()
 			assert.NoError(t, err, file)
 			resFiles = append(resFiles, parser.CodeGenerator.File+".go")
+
+			fmt.Println(_membersTypeFromUnion, file)
+			_membersTypeFromUnion = struct {
+				membersType map[string]int
+
+				lookUpSimpleTypes map[string]struct{}
+			}{
+				membersType:       map[string]int{},
+				lookUpSimpleTypes: map[string]struct{}{},
+			}
 		}
 	})
 
@@ -74,7 +113,18 @@ var _ = Describe("Parser and Gen SCL_Substation", func() {
 	})
 })
 
-func readFile(fileName string, fnChecker func(v string, fileName string, line int) error) error {
+func readFileAll(fileName string) (string, error) {
+	b, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		log.Fatalf("failed to open")
+
+	}
+	return string(b), err
+}
+
+type readFileHandler func(lineString string, fileName string, line int) error
+
+func readFile(fileName string, fnChecker func(lineString string, fileName string, line int) error) error {
 	file, err := os.Open(fileName)
 	if err != nil {
 		log.Fatalf("failed to open")
@@ -102,18 +152,4 @@ func checkInterface(v string, fileName string, line int) error {
 		return fmt.Errorf("не должно быть interface{} типа в структурах file=%s, line=%d", fileName, line)
 	}
 	return nil
-}
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-func TestParse_Case1(t *testing.T) {
-	file := "test/xsd/interations/case1.xsd"
-	parser := NewParser(NewOptions(file, xsdSrcDir, goCodeDir, "Go"))
-	err := parser.Parse()
-	assert.NoError(t, err, file)
-
-	err = readFile("test/go/output/interations/case1.go", checkInterface)
-	assert.NoError(t, err)
 }

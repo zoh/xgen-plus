@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://www.iec.ch/61850/2003/SCL" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.iec.ch/61850/2003/SCL" elementFormDefault="qualified"
+           attributeFormDefault="unqualified" version="2007B4">
+    <xs:attributeGroup name="agDesc">
+        <xs:attribute name="desc" type="xs:normalizedString" use="optional" default=""/>
+    </xs:attributeGroup>
+    <xs:complexType name="tBaseElement" abstract="true">
+        <xs:sequence>
+            <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+    </xs:complexType>
+    <xs:complexType name="tUnNaming" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="tBaseElement">
+                <xs:attributeGroup ref="agDesc"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="tNaming" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="tBaseElement">
+                <xs:attribute name="name" type="tName" use="required"/>
+                <xs:attributeGroup ref="agDesc"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:simpleType name="tName">
+        <xs:restriction base="tAnyName">
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="tAnyName">
+        <xs:restriction base="xs:normalizedString"/>
+    </xs:simpleType>
+</xs:schema>
