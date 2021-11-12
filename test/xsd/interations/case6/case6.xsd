@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+        xmlns="http://www.iec.ch/61850/2003/SCL" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.iec.ch/61850/2003/SCL" elementFormDefault="qualified"
+        attributeFormDefault="unqualified" version="2007B4"
+>
+    <xs:complexType name="tServiceWithMaxNonZero">
+        <xs:attribute name="max" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:unsignedInt">
+                    <xs:minExclusive value="0"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:element name="ConfLogControl" type="tServiceWithMaxNonZero"/>
+
+
+    <xs:element name="SCL">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="ConfLogControl" minOccurs="1" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

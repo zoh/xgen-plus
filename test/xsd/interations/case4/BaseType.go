@@ -1,4 +1,4 @@
-package %s
+package schema
 
 import (
 	"encoding/xml"
@@ -13,7 +13,6 @@ type NodeID struct {
 }
 
 type UnsignedInt string
-
 
 func (u *UnsignedInt) Validate() error {
 	_, err := strconv.ParseUint(string(*u), 10, 32)
@@ -103,7 +102,6 @@ var (
 	_ xml.Marshaler   = (*AnyHolder)(nil)
 )
 
-
 type Validator interface {
 	Validate() error
 }
@@ -114,4 +112,3 @@ func CheckValidate(v interface{}) error {
 	}
 	return nil
 }
-

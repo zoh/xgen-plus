@@ -166,13 +166,11 @@ func isSimpleType(baseType string, lang string) bool {
 		"Java":       3,
 		"Rust":       4,
 	}
-
 	for _, v := range BuildInTypes {
 		if v[supportLang[lang]] == baseType {
 			return true
 		}
 	}
-
 	return false
 }
 
@@ -196,22 +194,6 @@ func getBasefromSimpleType(name string, XSDSchema []interface{}) string {
 	}
 	return name
 }
-
-
-func getSimpleType(name string, XSDSchema []interface{}) (*SimpleType, bool) {
-	for _, ele := range XSDSchema {
-		switch v := ele.(type) {
-		case *SimpleType:
-			// fix: Union тоже сделаем как простой тип
-			if v.Union && v.Name == name {
-				return v, true
-			}
-		}
-	}
-	return nil, false
-}
-
-
 
 func getNSPrefix(str string) (ns string) {
 	split := strings.Split(str, ":")
@@ -305,4 +287,17 @@ func genFieldComment(name, doc, prefix string) string {
 		return fmt.Sprintf("\r\n%s %s ...\r\n", prefix, name)
 	}
 	return fmt.Sprintf("\r\n%s %s is %s\r\n", prefix, name, docReplacer.Replace(doc))
+}
+
+// in slice includes all values from subSlice
+func contains(slice, subSlice []string) bool {
+	var count int
+	for _, v2 := range subSlice {
+		for _, v := range slice {
+			if v == v2 {
+				count++
+			}
+		}
+	}
+	return count == len(subSlice)
 }

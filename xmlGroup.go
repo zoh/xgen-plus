@@ -14,7 +14,8 @@ import "encoding/xml"
 // element is used to define a group of elements to be used in complex type
 // definitions.
 func (opt *Options) OnGroup(ele xml.StartElement, protoTree []interface{}) (err error) {
-	group := Group{}
+	group := &Group{}
+
 	for _, attr := range ele.Attr {
 		if attr.Name.Local == "name" {
 			group.Name = attr.Value
@@ -47,7 +48,7 @@ func (opt *Options) OnGroup(ele xml.StartElement, protoTree []interface{}) (err 
 
 	}
 	if opt.ComplexType.Len() > 0 {
-		if !inGroups(&group, opt.ComplexType.Peek().(*ComplexType).Groups) {
+		if !inGroups(group, opt.ComplexType.Peek().(*ComplexType).Groups) {
 			opt.ComplexType.Peek().(*ComplexType).Groups = append(opt.ComplexType.Peek().(*ComplexType).Groups, group)
 		}
 		return
@@ -68,7 +69,7 @@ func (opt *Options) EndGroup(ele xml.EndElement, protoTree []interface{}) (err e
 	return
 }
 
-func inGroups(group *Group, groups []Group) bool {
+func inGroups(group *Group, groups []*Group) bool {
 	for _, g := range groups {
 		if g.Name == group.Name {
 			return true

@@ -23,6 +23,7 @@
 
     <xs:simpleType name="tIEDName">
         <xs:restriction base="tAcsiName">
+            <xs:minLength value="1"/>
             <xs:maxLength value="64"/>
             <xs:pattern value="[A-Za-z][0-9A-Za-z_]{0,2}"/>
             <xs:pattern value="[A-Za-z][0-9A-Za-z_]{4,63}"/>
@@ -33,16 +34,33 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="tAnyName">
+        <xs:restriction base="xs:normalizedString"/>
+    </xs:simpleType>
 
     <xs:complexType name="ComplexType1">
-        <xs:complexContent>
+        <xs:simpleContent>
             <xs:extension base="tIEDNameOrNone">
-                <xs:attribute name="type" type="xs:normalizedString" use="required"/>
+                <xs:attribute name="type" type="tAnyName" use="required"/>
+                <xs:attribute name="type2" type="tIEDNameOrNone" use="optional" default=""/>
             </xs:extension>
-        </xs:complexContent>
+        </xs:simpleContent>
     </xs:complexType>
 
 
+    <xs:element name="SCL">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="tBaseElement">
+                    <xs:sequence>
+                        <xs:element ref="ComplexType1" minOccurs="1"  maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="ComplexType1" type="ComplexType1"/>
 
     <xs:complexType name="tBaseElement" abstract="true">
         <xs:sequence>

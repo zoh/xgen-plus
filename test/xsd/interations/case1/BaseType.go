@@ -3,23 +3,20 @@ package schema
 import (
 	"encoding/xml"
 	"github.com/google/uuid"
+	"strconv"
 	"strings"
 )
-
-// BaseType для расширений
-type BaseType struct {
-	// NodeID ввёл для того чтобы идентифицировать элемент при выгрузке из бд.
-	// к примеру
-	NodeID *uuid.UUID `xml:"-" json:"node_id"`
-
-	Content          string `xml:",chardata" json:",omitempty"`
-	Comment          string `xml:",comment" json:"-"`
-	AdditionalFields `json:"-"`
-}
 
 // NodeID используется для маппинга элементов из бд и структуры
 type NodeID struct {
 	NodeID *uuid.UUID `xml:"-" json:"node_id"`
+}
+
+type UnsignedInt string
+
+func (u *UnsignedInt) Validate() error {
+	_, err := strconv.ParseUint(string(*u), 10, 32)
+	return err
 }
 
 /* Additional fields */
@@ -104,3 +101,14 @@ var (
 	_ xml.Unmarshaler = (*AnyHolder)(nil)
 	_ xml.Marshaler   = (*AnyHolder)(nil)
 )
+
+type Validator interface {
+	Validate() error
+}
+
+func CheckValidate(v interface{}) error {
+	if fn, ok := v.(Validator); ok {
+		return fn.Validate()
+	}
+	return nil
+}

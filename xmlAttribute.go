@@ -15,7 +15,7 @@ import (
 // OnAttribute handles parsing event on the attribute start elements. All
 // attributes are declared as simple types.
 func (opt *Options) OnAttribute(ele xml.StartElement, protoTree []interface{}) (err error) {
-	attribute := Attribute{
+	attribute := &Attribute{
 		Optional: true,
 	}
 	for _, attr := range ele.Attr {
@@ -54,7 +54,7 @@ func (opt *Options) OnAttribute(ele xml.StartElement, protoTree []interface{}) (
 		return
 	}
 
-	opt.Attribute.Push(&attribute)
+	opt.Attribute.Push(attribute)
 	return
 }
 
@@ -64,7 +64,8 @@ func (opt *Options) EndAttribute(ele xml.EndElement, protoTree []interface{}) (e
 		return
 	}
 	if opt.AttributeGroup.Len() > 0 {
-		opt.AttributeGroup.Peek().(*AttributeGroup).Attributes = append(opt.AttributeGroup.Peek().(*AttributeGroup).Attributes, *opt.Attribute.Pop().(*Attribute))
+		opt.AttributeGroup.Peek().(*AttributeGroup).Attributes = append(opt.AttributeGroup.Peek().(*AttributeGroup).Attributes,
+			opt.Attribute.Pop().(*Attribute))
 		return
 	}
 	if opt.ComplexType.Len() == 0 {

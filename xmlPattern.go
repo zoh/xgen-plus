@@ -8,10 +8,30 @@
 
 package xgen
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"fmt"
+	"regexp"
+)
 
+func (opt *Options) OnPattern(ele xml.StartElement, protoTree []interface{}) (err error) {
+	if opt.CurrentEle == "simpleType" {
+		if opt.SimpleType.Len() > 0 {
+			st := opt.SimpleType.Peek().(*SimpleType)
 
-// todo: implement OnPattern
+			for _, attr := range ele.Attr {
+				if attr.Name.Local == "value" {
+					_, err := regexp.Compile(fmt.Sprintf("^%s$", attr.Value))
+					if err != nil {
+						return err
+					}
+					st.Restriction.Pattern = append(st.Restriction.Pattern, fmt.Sprintf("^%s$", attr.Value))
+				}
+			}
+		}
+	}
+	return
+}
 
 // EndPattern handles parsing event on the pattern end elements. Pattern
 // defines the exact sequence of characters that are acceptable.

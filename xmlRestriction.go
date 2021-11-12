@@ -36,13 +36,10 @@ func (opt *Options) OnRestriction(ele xml.StartElement, protoTree []interface{})
 				if opt.SimpleType.Peek().(*SimpleType).Name == "" {
 					opt.SimpleType.Peek().(*SimpleType).Name = attr.Value
 				}
-			}
-
-			if opt.ComplexType.Peek() != nil {
+			} else if opt.ComplexType.Peek() != nil {
 				if attr.Value != "" {
 				}
 				ct := opt.ComplexType.Peek().(*ComplexType)
-
 				if ct.Name != "" {
 					ct.Base = valueType
 					logrus.Infof("For Complex type %q set restriction base=%q", ct.Name, valueType)
@@ -64,7 +61,8 @@ func (opt *Options) EndRestriction(ele xml.EndElement, protoTree []interface{}) 
 	}
 	if !opt.Element.Empty() {
 		if !opt.ComplexType.Empty() && len(opt.ComplexType.Peek().(*ComplexType).Elements) > 0 {
-			opt.ComplexType.Peek().(*ComplexType).Elements[len(opt.ComplexType.Peek().(*ComplexType).Elements)-1] = *opt.Element.Peek().(*Element)
+			opt.ComplexType.Peek().(*ComplexType).Elements[len(opt.ComplexType.Peek().(*ComplexType).Elements)-1] =
+				opt.Element.Peek().(*Element)
 		}
 	}
 	return

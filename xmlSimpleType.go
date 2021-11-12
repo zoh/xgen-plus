@@ -35,7 +35,8 @@ func (opt *Options) OnSimpleType(ele xml.StartElement, protoTree []interface{}) 
 		ct := l.(*ComplexType)
 
 		if len(ct.Attributes) > 0 {
-			ct.Attributes[len(ct.Attributes)-1].SimpleTypeInside = opt.SimpleType.Peek().(*SimpleType)
+			st := opt.SimpleType.Peek().(*SimpleType)
+			ct.Attributes[len(ct.Attributes)-1].SimpleTypeInside = st
 		}
 	}
 
@@ -45,6 +46,7 @@ func (opt *Options) OnSimpleType(ele xml.StartElement, protoTree []interface{}) 
 // EndSimpleType handles parsing event on the simpleType end elements.
 func (opt *Options) EndSimpleType(ele xml.EndElement, protoTree []interface{}) (err error) {
 	if opt.SimpleType.Len() > 0 && opt.Attribute.Len() > 0 {
+
 		opt.Attribute.Peek().(*Attribute).Type = opt.SimpleType.Pop().(*SimpleType).Base
 		return
 	}
@@ -56,8 +58,24 @@ func (opt *Options) EndSimpleType(ele xml.EndElement, protoTree []interface{}) (
 	//}
 
 	if ele.Name.Local == opt.CurrentEle && !opt.InUnion {
-		opt.ProtoTree = append(opt.ProtoTree, opt.SimpleType.Pop())
 		opt.CurrentEle = ""
+
+		st := opt.SimpleType.Pop().(*SimpleType)
+
+		if l := opt.ComplexType.Peek(); l != nil {
+			ct := l.(*ComplexType)
+
+			if len(ct.Attributes) > 0 {
+				ctName := ct.Name
+				atName := ct.Attributes[len(ct.Attributes)-1].Name
+
+				st.Name = ctName + genGoFieldName(atName) + genGoFieldType(trimNSPrefix(st.Name))
+			}
+		}
+
+		opt.ProtoTree = append(opt.ProtoTree, st)
+
+		FlushSimpleType(st)
 	}
 	return
 }

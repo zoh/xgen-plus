@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+    <ComplexType1 type2="ASDAD2" type="123123">123None123</ComplexType1>
+</SCL>

@@ -42,15 +42,7 @@ func TestParseSCL2(t *testing.T) {
 		err = parser.Parse()
 		assert.NoError(t, err, file)
 
-		logrus.Warnln(_membersTypeFromUnion, file)
-		_membersTypeFromUnion = struct {
-			membersType map[string]int
-
-			lookUpSimpleTypes map[string]struct{}
-		}{
-			membersType:       map[string]int{},
-			lookUpSimpleTypes: map[string]struct{}{},
-		}
+		fmt.Println("Done.", file)
 	}
 }
 
@@ -85,16 +77,6 @@ var _ = Describe("Parser and Gen SCL_Substation", func() {
 			err = parser.Parse()
 			assert.NoError(t, err, file)
 			resFiles = append(resFiles, parser.CodeGenerator.File+".go")
-
-			fmt.Println(_membersTypeFromUnion, file)
-			_membersTypeFromUnion = struct {
-				membersType map[string]int
-
-				lookUpSimpleTypes map[string]struct{}
-			}{
-				membersType:       map[string]int{},
-				lookUpSimpleTypes: map[string]struct{}{},
-			}
 		}
 	})
 

@@ -55,7 +55,10 @@ type Options struct {
 
 	CodeGenerator *CodeGenerator
 
-	log logrus.Ext1FieldLogger
+	Log logrus.Ext1FieldLogger
+
+	// for elements inside <xs:choice >... </xs:choice>
+	OutChoice *Choice
 }
 
 func NewOptions(filePath, xsdSrcDir, codeDir string, lang string) *Options {
@@ -71,7 +74,7 @@ func NewOptions(filePath, xsdSrcDir, codeDir string, lang string) *Options {
 		ParseFileMap:        make(map[string][]interface{}),
 		ProtoTree:           make([]interface{}, 0),
 
-		log: logrus.New().WithField("pkg", "xgen-plus"),
+		Log: logrus.New().WithField("pkg", "xgen-plus"),
 	}
 }
 
@@ -131,12 +134,12 @@ func (opt *Options) Parse() (err error) {
 			opt.InElement = element.Name.Local
 			funcName := fmt.Sprintf("On%s", MakeFirstUpperCase(opt.InElement))
 			if err = callFuncByName(opt, funcName, []reflect.Value{reflect.ValueOf(element), reflect.ValueOf(opt.ProtoTree)}); err != nil {
-				return
+				log.Fatalln(err)
 			}
 		case xml.EndElement:
 			funcName := fmt.Sprintf("End%s", MakeFirstUpperCase(element.Name.Local))
 			if err = callFuncByName(opt, funcName, []reflect.Value{reflect.ValueOf(element), reflect.ValueOf(opt.ProtoTree)}); err != nil {
-				return
+				log.Fatalln(err)
 			}
 		case xml.CharData:
 			if err = opt.OnCharData(string(element), opt.ProtoTree); err != nil {
@@ -175,9 +178,11 @@ func (opt *Options) createCodeGenerator() error {
 		File:      strings.ReplaceAll(path, ".xsd", ""),
 		ProtoTree: opt.ProtoTree,
 		StructAST: map[string]string{},
+		Imports:   map[string]struct{}{},
 
-		log:     logrus.New(),
-		JsonTag: true,
+		log:       logrus.New(),
+		JsonTag:   true,
+		Validator: true,
 
 		OutputDir:    filepath.Dir(path),
 		BaseTypeFile: true,
@@ -222,6 +227,7 @@ func (opt *Options) GetValueType(value string, XSDSchema []interface{}) (valueTy
 		// extract type of value from include schema.
 		valueType = ""
 		for include := range opt.IncludeMap {
+			fmt.Println("file", filepath.Join(opt.FileDir, include))
 			parser := NewParser(&Options{
 				FilePath:            filepath.Join(opt.FileDir, include),
 				OutputDir:           opt.OutputDir,
@@ -249,6 +255,7 @@ func (opt *Options) GetValueType(value string, XSDSchema []interface{}) (valueTy
 
 	depXSDSchema, ok := opt.ParseFileMap[xsdFile]
 	if !ok {
+
 		parser := NewParser(&Options{
 			FilePath:            xsdFile,
 			OutputDir:           opt.OutputDir,
@@ -270,6 +277,7 @@ func (opt *Options) GetValueType(value string, XSDSchema []interface{}) (valueTy
 	if valueType != trimNSPrefix(value) && valueType != "" {
 		return
 	}
+
 	parser := NewParser(&Options{
 		FilePath:            xsdFile,
 		OutputDir:           opt.OutputDir,

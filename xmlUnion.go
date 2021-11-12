@@ -13,15 +13,6 @@ import (
 	"strings"
 )
 
-var _membersTypeFromUnion = struct {
-	membersType map[string]int
-
-	lookUpSimpleTypes map[string]struct{}
-}{
-	membersType: map[string]int{},
-	lookUpSimpleTypes: map[string]struct{}{},
-}
-
 // OnUnion handles parsing event on the union start elements. The union
 // element defines a simple type as a collection (union) of values from
 // specified simple data types.
@@ -33,19 +24,10 @@ func (opt *Options) OnUnion(ele xml.StartElement, protoTree []interface{}) (err 
 	opt.SimpleType.Peek().(*SimpleType).Union = true
 	opt.SimpleType.Peek().(*SimpleType).MemberTypes = make(map[string]string)
 
-	typeName := opt.SimpleType.Peek().(*SimpleType).Name
-
-	defer func() {
-		_membersTypeFromUnion.lookUpSimpleTypes[typeName] = struct{}{}
-	}()
-
 	for _, attr := range ele.Attr {
 		if attr.Name.Local == "memberTypes" {
 			memberTypes := strings.Split(attr.Value, " ")
 			for _, memberType := range memberTypes {
-				if _, ok := _membersTypeFromUnion.lookUpSimpleTypes[typeName]; ok == false {
-					_membersTypeFromUnion.membersType[memberType]++
-				}
 
 				opt.SimpleType.Peek().(*SimpleType).MemberTypes[trimNSPrefix(memberType)], err = opt.GetValueType(memberType, protoTree)
 				if err != nil {

@@ -8,7 +8,29 @@
 
 package xgen
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"strconv"
+)
+
+func (opt *Options) OnMaxLength(ele xml.StartElement, protoTree []interface{}) (err error) {
+	if opt.CurrentEle == "simpleType" {
+		if opt.SimpleType.Len() > 0 {
+			st := opt.SimpleType.Peek().(*SimpleType)
+
+			for _, attr := range ele.Attr {
+				if attr.Name.Local == "value" {
+					val, err := strconv.Atoi(attr.Value)
+					if err != nil {
+						return err
+					}
+					st.Restriction.MaxLength = val
+				}
+			}
+		}
+	}
+	return
+}
 
 // EndMaxLength handles parsing event on the maxLength end elements. MaxLength
 // specifies the maximum number of characters or list items allowed. Must be

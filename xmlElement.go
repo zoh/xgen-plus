@@ -15,7 +15,7 @@ import (
 
 // OnElement handles parsing event on the element start elements.
 func (opt *Options) OnElement(ele xml.StartElement, protoTree []interface{}) (err error) {
-	e := Element{}
+	e := &Element{}
 	for _, attr := range ele.Attr {
 		if attr.Name.Local == "ref" {
 			e.Name = attr.Value
@@ -34,6 +34,13 @@ func (opt *Options) OnElement(ele xml.StartElement, protoTree []interface{}) (er
 				return
 			}
 		}
+
+		//.Plurals
+		if opt.OutChoice != nil {
+			e.PluralOptional = opt.OutChoice.MinOccurs == "0"
+
+			e.Plural = opt.OutChoice.MaxOccurs == "unbounded" || opt.OutChoice.MaxOccurs > "1"
+		}
 		if attr.Name.Local == "maxOccurs" {
 			var maxOccurs int
 			if maxOccurs, err = strconv.Atoi(attr.Value); attr.Value != "unbounded" && err != nil {
@@ -48,6 +55,12 @@ func (opt *Options) OnElement(ele xml.StartElement, protoTree []interface{}) (er
 				e.Plural = true
 			}
 		}
+
+		if attr.Name.Local == "minOccurs" {
+			if attr.Value == "0" {
+				e.PluralOptional = true
+			}
+		}
 	}
 
 	if e.Type == "" {
@@ -55,10 +68,10 @@ func (opt *Options) OnElement(ele xml.StartElement, protoTree []interface{}) (er
 		if err != nil {
 			return
 		}
-		opt.Element.Push(&e)
+		opt.Element.Push(e)
 	}
 	if opt.ComplexType.Len() > 0 {
-		if !inElements(&e, opt.ComplexType.Peek().(*ComplexType).Elements) {
+		if !inElements(e, opt.ComplexType.Peek().(*ComplexType).Elements) {
 			opt.ComplexType.Peek().(*ComplexType).Elements = append(opt.ComplexType.Peek().(*ComplexType).Elements, e)
 		}
 		return
@@ -71,7 +84,7 @@ func (opt *Options) OnElement(ele xml.StartElement, protoTree []interface{}) (er
 		return
 	}
 
-	opt.Element.Push(&e)
+	opt.Element.Push(e)
 	return
 }
 
@@ -83,7 +96,7 @@ func (opt *Options) EndElement(ele xml.EndElement, protoTree []interface{}) (err
 	return
 }
 
-func inElements(element *Element, elements []Element) bool {
+func inElements(element *Element, elements []*Element) bool {
 	for _, ele := range elements {
 		if element.Name == ele.Name {
 			return true

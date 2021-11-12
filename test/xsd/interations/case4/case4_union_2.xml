@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<SCL
+        xmlns:iv="http://www.lysis.su/xsd/MnemoView.xsd"
+        iv:master="false"
+        version="2007"
+        revision="B"
+        xmlns="http://www.iec.ch/61850/2003/SCL">
+    <ComplexType1>None</ComplexType1>
+</SCL>

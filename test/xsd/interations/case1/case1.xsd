@@ -7,8 +7,6 @@
         version="2007B4"
 >
 
-    <xs:include schemaLocation="SCL_BaseTypes.xsd"/>
-
     <xs:simpleType name="tAcsiName">
         <xs:restriction base="xs:Name">
             <xs:pattern value="[A-Za-z][0-9A-Za-z_]*"/>

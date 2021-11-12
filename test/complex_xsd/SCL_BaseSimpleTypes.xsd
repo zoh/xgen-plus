@@ -209,7 +209,7 @@
 	<xs:simpleType name="tEnumStringValue">
 		<xs:restriction base="xs:normalizedString">
 			<xs:maxLength value="127"/>
-			<xs:pattern value="[\p{IsBasicLatin}\p{IsLatin-1Supplement}]*"/>
+<!--			<xs:pattern value="[\p{IsBasicLatin}\p{IsLatin-1Supplement}]*"/>-->
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

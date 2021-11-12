@@ -8,8 +8,6 @@
 
 package xgen
 
-import "regexp"
-
 // SimpleTypeInside definitions provide for constraining character information item
 // [children] of element and attribute information items.
 // https://www.w3.org/TR/xmlschema-1/#Simple_Type_Definitions
@@ -37,15 +35,16 @@ type SimpleType struct {
 // mechanism of element substitution groups.
 // https://www.w3.org/TR/xmlschema-1/#cElement_Declarations
 type Element struct {
-	Doc      string
-	Name     string
-	Wildcard bool
-	Type     string
-	Abstract bool
-	Plural   bool
-	Optional bool
-	Nillable bool
-	Default  string
+	Doc            string
+	Name           string
+	Wildcard       bool
+	Type           string
+	Abstract       bool
+	Plural         bool
+	PluralOptional bool
+	Optional       bool
+	Nillable       bool
+	Default        string
 }
 
 // Attribute declarations provide for: Local validation of attribute
@@ -83,10 +82,10 @@ type ComplexType struct {
 	Name           string
 	Base           string
 	Anonymous      bool
-	Elements       []Element
-	Attributes     []Attribute
-	Groups         []Group
-	AttributeGroup []AttributeGroup
+	Elements       []*Element
+	Attributes     []*Attribute
+	Groups         []*Group
+	AttributeGroup []*AttributeGroup
 	Mixed          bool
 
 	EmbeddedStructName string
@@ -103,8 +102,8 @@ type ComplexType struct {
 type Group struct {
 	Doc      string
 	Name     string
-	Elements []Element
-	Groups   []Group
+	Elements []*Element
+	Groups   []*Group
 	Plural   bool
 	Ref      string
 }
@@ -122,7 +121,12 @@ type AttributeGroup struct {
 	Doc        string
 	Name       string
 	Ref        string
-	Attributes []Attribute
+	Attributes []*Attribute
+
+	AttributeGroup []*AttributeGroup
+	//todo: Attribute group ??
+
+	insideAttrGroup bool
 }
 
 // Restriction are used to define acceptable values for XML elements or
@@ -134,5 +138,10 @@ type Restriction struct {
 	Enum                 []string
 	Min, Max             float64
 	MinLength, MaxLength int
-	Pattern              *regexp.Regexp
+	Pattern              []string
+}
+
+type Choice struct {
+	MinOccurs string
+	MaxOccurs string
 }

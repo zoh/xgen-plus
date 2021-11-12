@@ -15,7 +15,6 @@ import (
 )
 
 func (opt *Options) OnMinLength(ele xml.StartElement, protoTree []interface{}) (err error) {
-
 	if opt.CurrentEle == "simpleType" {
 		if opt.SimpleType.Len() > 0 {
 			st := opt.SimpleType.Peek().(*SimpleType)
@@ -32,7 +31,6 @@ func (opt *Options) OnMinLength(ele xml.StartElement, protoTree []interface{}) (
 
 		}
 	}
-
 	return
 }
 
