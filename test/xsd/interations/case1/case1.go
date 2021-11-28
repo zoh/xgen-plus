@@ -89,8 +89,8 @@ func (t *TIEDNameIsNone) Validate() error {
 // TIEDNameOrNone ...
 type TIEDNameOrNone struct { /* UNION */
 	Content        string `xml:",chardata" json:",omitempty"`
-	tIEDNameIsNone *TIEDNameIsNone
 	tIEDName       *TIEDName
+	tIEDNameIsNone *TIEDNameIsNone
 }
 
 func (t *TIEDNameOrNone) IsEmpty() bool { return t.Content == "" }

@@ -216,6 +216,7 @@ func (gen *CodeGenerator) GoComplexTypeValidation(v *ComplexType) {
 func (t *%s) Validate() error { 
 	%s
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 `, fieldName, body)

@@ -508,12 +508,7 @@ func (gen *CodeGenerator) GoBaseFile(file string) {
 		packageName = "schema"
 	}
 
-	fileRaw, err := os.ReadFile("assets/BaseType.template")
-	if err != nil {
-		logrus.Fatalln(err)
-	}
-
-	s := fmt.Sprintf(string(fileRaw), packageName)
+	s := fmt.Sprintf(BaseTypeTmpl, packageName)
 	b := []byte(s)
 
 	b, err = format.Source(b)

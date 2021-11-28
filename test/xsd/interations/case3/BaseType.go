@@ -9,7 +9,7 @@ import (
 
 // NodeID используется для маппинга элементов из бд и структуры
 type NodeID struct {
-	NodeID *uuid.UUID `xml:"-" json:"node_id"`
+	NodeID *uuid.UUID `xml:"-" json:"node_id,omitempty"`
 }
 
 type UnsignedInt string

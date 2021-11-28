@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"github.com/sirupsen/logrus"
@@ -27,4 +28,12 @@ func TestCase3(t *testing.T) {
 	b, err = xml.Marshal(model)
 	require.NoError(t, err)
 	fmt.Println(string(b))
+
+
+	t.Run("un/marshall json", func(t *testing.T) {
+		b, err := json.Marshal(model)
+		require.NoError(t, err)
+
+		fmt.Println(string(b), "?")
+	})
 }
