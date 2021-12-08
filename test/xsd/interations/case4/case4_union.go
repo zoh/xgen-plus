@@ -56,11 +56,12 @@ func (t *TIEDNameIsNone) Validate() error {
 }
 
 // "SimpleType"
-// TIEDNameOrNone ...
-type TIEDNameOrNone struct { /* UNION */
-	Content        string `xml:",chardata" json:",omitempty"`
-	tIEDName       *TIEDName
+// TIEDNameOrNone is  UNION type
+type TIEDNameOrNone struct {
+	UnionContent
+	//Content        string `xml:",chardata" json:",omitempty"`
 	tIEDNameIsNone *TIEDNameIsNone
+	tIEDName       *TIEDName
 }
 
 func (t *TIEDNameOrNone) IsEmpty() bool { return t.Content == "" }
@@ -169,6 +170,7 @@ func (t *ComplexType1) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
@@ -194,6 +196,7 @@ func (t *SCL) Validate() error {
 	}
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
@@ -214,5 +217,6 @@ func (t *TBaseElement) Validate() error {
 	//Text is SimpleType; skipped
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }

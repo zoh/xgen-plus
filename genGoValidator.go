@@ -6,19 +6,25 @@ import (
 )
 
 func (gen *CodeGenerator) GoSimpleTypeValidation(v *SimpleType) {
+	var body string
+
 	fieldName := genGoFieldName(trimNSPrefix(v.Name))
 
-	//if len(v.Restriction.Enum) > 0 && len(v.Restriction.Pattern) > 0 {
-	//	logrus.Fatal("enums and Patterns in one simple type." + v.Name)
-	//}
-
-	var body string
+	if v.OrigBase != "" {
+		baseName := genGoFieldName(v.OrigBase)
+		body += "// " + baseName + " \n"
+		if _, ok := FindSimpleType(v.OrigBase); ok {
+			body += fmt.Sprintf("vv := %s(*t) \n	if err := vv.Validate(); err != nil { return err } \n", baseName)
+		}
+	}
+	// todo: нужно сделать валидацию на <restriction base=""
+	//  если он есть
 
 	if v.Union && len(v.MemberTypes) > 0 {
 		for memberName := range v.MemberTypes {
 			var tt string
 			if isUnionSimpleType(memberName) {
-				tt = fmt.Sprintf("p := %s{Content: t.Content}", genGoFieldType(memberName))
+				tt = fmt.Sprintf("p := %s{} \n p.Content = t.Content \n", genGoFieldType(memberName))
 			} else {
 				tt = fmt.Sprintf("p := %[1]s(t.Content)", genGoFieldType(memberName))
 			}
@@ -112,9 +118,7 @@ func (gen *CodeGenerator) GoComplexTypeValidation(v *ComplexType) {
 
 		if isSimpleType(tt, gen.Lang) || ok {
 			// валидация для
-			body += fmt.Sprintf(`if err := t.%s.Validate(); err!=nil { return err }
-`,
-				genGoFieldName(trimNSPrefix(v.EmbeddedStructName)))
+			body += fmt.Sprintf("if t.Content != nil { if err := t.Content.Validate(); err!=nil { return err } } \n")
 		} else {
 			if types, ok := BuildInTypes[tt]; ok {
 				body += fmt.Sprintf("// Content type %q skipped, is go-based", types[0])

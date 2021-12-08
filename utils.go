@@ -62,10 +62,8 @@ func GetFileList(path string, mask string) (files []string, err error) {
 			return
 		}
 	}
-	if r != nil {
-		if r.MatchString(path) {
-			files = append(files, path)
-		}
+	if r != nil && r.MatchString(path) {
+		files = append(files, path)
 	} else {
 		files = append(files, path)
 	}

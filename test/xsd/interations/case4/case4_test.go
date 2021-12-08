@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"github.com/sirupsen/logrus"
@@ -44,6 +45,9 @@ func TestParseXml(t *testing.T) {
 	require.NoError(t, err)
 
 	fmt.Println(string(b))
+
+	b, err = json.Marshal(model)
+	fmt.Println(string(b), err)
 }
 
 func TestParseXmlRequireTypeAttr(t *testing.T) {

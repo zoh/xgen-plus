@@ -45,6 +45,7 @@ func (t *TP) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
@@ -64,6 +65,7 @@ func (t *TPIPbase) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
@@ -99,6 +101,7 @@ func (t *SCL) Validate() error {
 	}
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
@@ -121,12 +124,13 @@ func (t *TBaseElement) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
 // "SimpleType"
-// TPTypeEnum ...
-type TPTypeEnum struct { /* UNION */
+// TPTypeEnum is  UNION type
+type TPTypeEnum struct {
 	Content              string `xml:",chardata" json:",omitempty"`
 	tPredefinedPTypeEnum *TPredefinedPTypeEnum
 	tExtensionPTypeEnum  *TExtensionPTypeEnum
@@ -270,8 +274,8 @@ func (t *TExtensionPTypeEnum) Validate() error {
 }
 
 // "SimpleType"
-// TSDOCount ...
-type TSDOCount struct { /* UNION */
+// TSDOCount is  UNION type
+type TSDOCount struct {
 	Content        string `xml:",chardata" json:",omitempty"`
 	unsignedInt    *UnsignedInt
 	tRestrName1stL *TRestrName1stL
@@ -410,6 +414,7 @@ func (t *TPIPv6IGMPv3Src) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
@@ -429,6 +434,7 @@ func (t *TPIPv6base) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
@@ -451,5 +457,6 @@ func (t *TVal) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }

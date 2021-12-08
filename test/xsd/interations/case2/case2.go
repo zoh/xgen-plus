@@ -31,6 +31,7 @@ func (t *TBaseElement) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
@@ -54,6 +55,7 @@ func (t *TUnNaming) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
@@ -85,6 +87,7 @@ func (t *TNaming) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 

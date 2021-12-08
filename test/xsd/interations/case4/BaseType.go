@@ -1,7 +1,9 @@
 package schema
 
 import (
+	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"github.com/google/uuid"
 	"strconv"
 	"strings"
@@ -109,6 +111,34 @@ type Validator interface {
 func CheckValidate(v interface{}) error {
 	if fn, ok := v.(Validator); ok {
 		return fn.Validate()
+	}
+	return nil
+}
+
+type UnionContent struct {
+	Content string `xml:",chardata" json:",omitempty"`
+}
+
+func (u UnionContent) String() string {
+	return u.Content
+}
+
+func (u UnionContent) MarshalJSON() ([]byte, error) {
+	return []byte("\"" + u.Content + "\""), nil
+}
+
+var (
+	_ json.Unmarshaler = (*UnionContent)(nil)
+	_ json.Marshaler   = (*UnionContent)(nil)
+	_ fmt.Stringer   = (*UnionContent)(nil)
+)
+
+
+
+func (u *UnionContent) UnmarshalJSON(v []byte) error {
+	if len(v) > 0 {
+		u.Content = strings.Trim(string(v), `"`)
+		u.Content = string(v)
 	}
 	return nil
 }

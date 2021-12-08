@@ -183,13 +183,16 @@ func (gen *CodeGenerator) GoSimpleType(v *SimpleType) {
 		}
 	}
 	if v.Union && len(v.MemberTypes) > 0 {
+		v.Doc = " UNION type"
 		if _, ok := gen.StructAST[v.Name]; !ok {
-			content := " struct { /* UNION */  \n"
+			content := " struct {  \n"
 			fieldName := genGoFieldName(v.Name)
 			if fieldName != v.Name {
 				//gen.Imports["encoding/xml"] = struct{}{}
 			}
-			content += "\tContent string `xml:\",chardata\" json:\",omitempty\"` \n"
+			//content += "\tContent string `xml:\",chardata\" json:\",omitempty\"` \n"
+			content += "\tUnionContent \n"
+
 			for memberName, memberType := range v.MemberTypes {
 				if memberType == "" { // fix order issue
 					memberType = getBasefromSimpleType(memberName, gen.ProtoTree)
@@ -226,10 +229,16 @@ func (t *%[1]s) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 		gen.StructAST[v.Name] = content
 		fieldName := genGoFieldName(trimNSPrefix(v.Name))
 
-		//gen.Field += fmt.Sprintf("// Bse %s\n", v.OrigBase)
 		gen.Field += fmt.Sprintf("%stype %s%s",
 			genFieldComment(fieldName, v.Doc, "// base:\""+v.OrigBase+"\"\n//"),
-			fieldName, gen.StructAST[v.Name])
+			fieldName,
+			gen.StructAST[v.Name],
+		)
+
+		if strings.TrimSpace(gen.StructAST[v.Name]) == "string" {
+			gen.Field += fmt.Sprintf("func (t *%s) String() string { if t==nil {return \"\"} \n return string(*t) } \n", fieldName)
+		}
+
 		goto Validator
 	}
 
@@ -264,14 +273,13 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 
 		if v.EmbeddedStructName != "" {
 			tt := getBasefromSimpleType(trimNSPrefix(v.EmbeddedStructName), gen.ProtoTree)
-
 			_, ok := simpleTypes[v.EmbeddedStructName]
 
 			if isSimpleType(tt, gen.Lang) || ok {
 				// добавляем  NodeID
 				content += "NodeID\n"
 				//  и пишем как Content ....
-				content += fmt.Sprintf("\t%s\t`xml:\",chardata\" json:\",omitempty\"` \n",
+				content += fmt.Sprintf("\tContent %s\t`xml:\",chardata\" json:\",omitempty\"` \n",
 					"*"+genGoFieldName(trimNSPrefix(v.EmbeddedStructName)))
 			} else {
 				if types, ok := BuildInTypes[tt]; ok {
@@ -292,10 +300,10 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 		}
 
 		if v.AnyAttributes {
-			content += "\tAdditionalFields\tAdditionalFieldsType `xml:\",any,attr\"`\n"
+			content += "\tAdditionalFields\tAdditionalFieldsType `xml:\",any,attr\" json:\"-\"`\n"
 		}
 		if v.AnyElements {
-			content += "\tCustomElements\t[]AnyHolder\t`xml:\",any\"`\n"
+			content += "\tCustomElements\t[]AnyHolder\t`xml:\",any\" json:\"-\"`\n"
 		}
 
 		fieldName := genGoFieldName(v.Name)
@@ -350,9 +358,10 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 		}
 
 		for _, element := range v.Elements {
-			var plural string
+			var plural, optional string
 
 			if element.PluralOptional {
+				optional = `,omitempty`
 				plural = "*" + plural
 			}
 			if element.Plural {
@@ -366,7 +375,11 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 
 			var jsonTag string
 			if gen.JsonTag {
-				jsonTag = fmt.Sprintf(` json:"%s"`, element.Name)
+				jsonTag = fmt.Sprintf(` json:"%s%s"`, element.Name, optional)
+			}
+
+			if plural == "[]" && fieldType == "uint32" {
+				fieldType = "UnitSlice"
 			}
 
 			content += fmt.Sprintf("\t%s\t%s%s\t`xml:\"%s\"%s`\n",

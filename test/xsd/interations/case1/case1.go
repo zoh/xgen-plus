@@ -86,11 +86,11 @@ func (t *TIEDNameIsNone) Validate() error {
 }
 
 // "SimpleType"
-// TIEDNameOrNone ...
-type TIEDNameOrNone struct { /* UNION */
+// TIEDNameOrNone is  UNION type
+type TIEDNameOrNone struct {
 	Content        string `xml:",chardata" json:",omitempty"`
-	tIEDName       *TIEDName
 	tIEDNameIsNone *TIEDNameIsNone
+	tIEDName       *TIEDName
 }
 
 func (t *TIEDNameOrNone) IsEmpty() bool { return t.Content == "" }
@@ -145,6 +145,7 @@ func (t *TAnyContentFromOtherNamespace) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
@@ -195,6 +196,7 @@ func (t *TPrivate) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
@@ -213,6 +215,7 @@ func (t *TVal) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
@@ -244,6 +247,7 @@ func (t *TIDNaming) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
@@ -272,6 +276,7 @@ func (t *TBaseElement) Validate() error {
 	}
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
@@ -333,5 +338,6 @@ func (t *TText) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }

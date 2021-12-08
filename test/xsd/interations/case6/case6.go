@@ -35,6 +35,7 @@ func (t *TServiceWithMaxNonZero) Validate() error {
 	// Elements
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
@@ -61,6 +62,7 @@ func (t *SCL) Validate() error {
 	}
 
 	//todo: check "minOccurs" and "maxOccurs"
+	//	for example minOccurs=1,2 ... and maxOccurs=2
 	return nil
 }
 
