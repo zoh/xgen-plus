@@ -33,13 +33,16 @@ const _TypeScriptAttributeGroupBody = `export function {{ .name }}<TBase extends
   };
 }`
 
-const __TypeScriptComplexTypeConstructor = `  constructor(...args: any[]) {
+const __TypeScriptComplexTypeConstructor = `
+  constructor(...args: any[]) {
     {{if .hasParent}}super(...args);{{end}}
-      const opts = args[0];
+    const opts = args[0];
+    {{if .hasContent}}if (typeof opts.Content != "undefined") 
+      this.Content = opts.Content; {{end}}
     // Attributes
   {{range .v.Attributes}}    this.{{.Name}} = opts['{{.Name}}'];
 {{end}}
     // Elements
-    {{range .v.Elements}}    this.{{.Name}} = opts['{{.Name}}'];
+    {{range .v.Elements}}{{if .Plural}} this.{{.Name}} = opts['{{.Name}}']?.map(val => new {{.Type}}(val)); {{else}} this.{{.Name}} = new {{.Type}}(opts['{{.Name}}']); {{end}}
 {{end}}
   }`

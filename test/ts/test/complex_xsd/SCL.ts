@@ -1,4 +1,4 @@
-import { TSubstation,TIED,TLine,TBaseElement,TSclRevision,THeader,TCommunication,TDataTypeTemplates,TProcess,TSclVersion,TSclRelease } from "./BaseIndex"
+import { TSclVersion,TBaseElement,TSclRevision,TSclRelease,THeader,TSubstation,TCommunication,TIED,TDataTypeTemplates,TLine,TProcess } from "./BaseIndex"
 
 
 // SCLElement ...
@@ -17,21 +17,23 @@ export class SCL extends TBaseElement {
 	DataTypeTemplates?: TDataTypeTemplates;
 	Line?: Array<TLine>;
 	Process?: Array<TProcess>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.version = opts['version'];
     this.revision = opts['revision'];
     this.release = opts['release'];
 
     // Elements
-        this.Header = opts['Header'];
-    this.Substation = opts['Substation'];
-    this.Communication = opts['Communication'];
-    this.IED = opts['IED'];
-    this.DataTypeTemplates = opts['DataTypeTemplates'];
-    this.Line = opts['Line'];
-    this.Process = opts['Process'];
+     this.Header = new THeader(opts['Header']); 
+ this.Substation = opts['Substation']?.map(val => new TSubstation(val)); 
+ this.Communication = new TCommunication(opts['Communication']); 
+ this.IED = opts['IED']?.map(val => new TIED(val)); 
+ this.DataTypeTemplates = new TDataTypeTemplates(opts['DataTypeTemplates']); 
+ this.Line = opts['Line']?.map(val => new TLine(val)); 
+ this.Process = opts['Process']?.map(val => new TProcess(val)); 
 
   }}

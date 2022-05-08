@@ -1,4 +1,4 @@
-import { TFCEnum,TSDOCount,TBasicTypeEnum,TVal,TDataName,TSubDataName,AgDesc,Constructor,TName,TCDCEnum,TEnumStringValue,TIDNaming,TAttributeNameEnum,NodeID,TNamespaceName,TUnNaming,TAnyName,TDACount,TLNClassEnum,TValKindEnum } from "./BaseIndex"
+import { Constructor,TIDNaming,AgDesc,TVal,TSDOCount,TUnNaming,TDataName,TName,TNamespaceName,TDACount,TValKindEnum,TAttributeNameEnum,TCDCEnum,TAnyName,TLNClassEnum,TSubDataName,TFCEnum,NodeID,TEnumStringValue,TBasicTypeEnum } from "./BaseIndex"
 
 
 // AgDATrgOp ...
@@ -35,9 +35,11 @@ export class TAbstractDataAttribute extends TUnNaming {
 	count?: TDACount;
 	valImport?: boolean;
 	Val?: Array<TVal>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.name = opts['name'];
     this.sAddr = opts['sAddr'];
@@ -48,7 +50,7 @@ export class TAbstractDataAttribute extends TUnNaming {
     this.valImport = opts['valImport'];
 
     // Elements
-        this.Val = opts['Val'];
+     this.Val = opts['Val']?.map(val => new TVal(val)); 
 
   }}
 
@@ -58,15 +60,17 @@ export class TLNodeType extends TIDNaming {
 	iedType?: TAnyName;
 	lnClass: TLNClassEnum;
 	DO: Array<TDO>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.iedType = opts['iedType'];
     this.lnClass = opts['lnClass'];
 
     // Elements
-        this.DO = opts['DO'];
+     this.DO = opts['DO']?.map(val => new TDO(val)); 
 
   }}
 
@@ -77,9 +81,11 @@ export class TDO extends TUnNaming {
 	type: TName;
 	accessControl?: string;
 	transient?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.name = opts['name'];
     this.type = opts['type'];
@@ -97,16 +103,18 @@ export class TDOType extends TIDNaming {
 	cdc: TCDCEnum;
 	SDO?: Array<TSDO>;
 	DA?: Array<TDA>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.iedType = opts['iedType'];
     this.cdc = opts['cdc'];
 
     // Elements
-        this.SDO = opts['SDO'];
-    this.DA = opts['DA'];
+     this.SDO = opts['SDO']?.map(val => new TSDO(val)); 
+ this.DA = opts['DA']?.map(val => new TDA(val)); 
 
   }}
 
@@ -116,9 +124,11 @@ export class TSDO extends TUnNaming {
 	name: TSubDataName;
 	type: TName;
 	count?: TSDOCount;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.name = opts['name'];
     this.type = opts['type'];
@@ -133,14 +143,16 @@ export class TSDO extends TUnNaming {
 export class TDA extends AgDATrgOp(TAbstractDataAttribute) {
 	fc: TFCEnum;
 	ProtNs?: Array<TProtNs>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.fc = opts['fc'];
 
     // Elements
-        this.ProtNs = opts['ProtNs'];
+     this.ProtNs = opts['ProtNs']?.map(val => new TProtNs(val)); 
 
   }}
 
@@ -150,24 +162,28 @@ export class TDAType extends TIDNaming {
 	iedType?: TAnyName;
 	BDA: Array<TBDA>;
 	ProtNs?: Array<TProtNs>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.iedType = opts['iedType'];
 
     // Elements
-        this.BDA = opts['BDA'];
-    this.ProtNs = opts['ProtNs'];
+     this.BDA = opts['BDA']?.map(val => new TBDA(val)); 
+ this.ProtNs = opts['ProtNs']?.map(val => new TProtNs(val)); 
 
   }}
 
 // ComplexType 
 //  TBDA ...
 export class TBDA extends TAbstractDataAttribute {
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
@@ -178,13 +194,15 @@ export class TBDA extends TAbstractDataAttribute {
 //  TEnumType ...
 export class TEnumType extends TIDNaming {
 	EnumVal: Array<TEnumVal>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
-        this.EnumVal = opts['EnumVal'];
+     this.EnumVal = opts['EnumVal']?.map(val => new TEnumVal(val)); 
 
   }}
 
@@ -193,9 +211,12 @@ export class TEnumType extends TIDNaming {
 export class TProtNs extends NodeID {
 	Content?: TNamespaceName; 
 	type?: TProtNsTypeNormalizedString;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    if (typeof opts.Content != "undefined") 
+      this.Content = opts.Content; 
     // Attributes
       this.type = opts['type'];
 
@@ -208,9 +229,12 @@ export class TProtNs extends NodeID {
 export class TEnumVal extends AgDesc(NodeID) {
 	Content?: TEnumStringValue; 
 	ord: number;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    if (typeof opts.Content != "undefined") 
+      this.Content = opts.Content; 
     // Attributes
       this.ord = opts['ord'];
 
@@ -225,15 +249,17 @@ export class TDataTypeTemplates extends NodeID {
 	DOType: Array<TDOType>;
 	DAType?: Array<TDAType>;
 	EnumType?: Array<TEnumType>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
-        this.LNodeType = opts['LNodeType'];
-    this.DOType = opts['DOType'];
-    this.DAType = opts['DAType'];
-    this.EnumType = opts['EnumType'];
+     this.LNodeType = opts['LNodeType']?.map(val => new TLNodeType(val)); 
+ this.DOType = opts['DOType']?.map(val => new TDOType(val)); 
+ this.DAType = opts['DAType']?.map(val => new TDAType(val)); 
+ this.EnumType = opts['EnumType']?.map(val => new TEnumType(val)); 
 
   }}

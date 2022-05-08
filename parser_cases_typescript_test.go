@@ -68,10 +68,9 @@ func TestParse_TypeScriptSCLAll(t *testing.T) {
 			logrus.Infoln(parser.CodeGenerator.File)
 			resultFiles = append(resultFiles, parser.CodeGenerator.File)
 		} else {
-			logrus.Warn("not found CodeGenerator object")
+			logrus.Warn("not found CodeGenerator object in file ", file)
 		}
 		fmt.Println("Done.", file)
 	}
-
 	require.NoError(t, CreateBaseIndexFile("test/ts/test/complex_xsd", resultFiles))
 }

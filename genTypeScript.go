@@ -297,9 +297,10 @@ func (gen *CodeGenerator) TypeScriptComplexType(v *ComplexType) {
 			}
 			gen.setImports(clearPlural(fieldType))
 			content += fmt.Sprintf("\t%s%s: %s;\n", element.Name, optional, fieldType)
+			element.Type = clearPlural(fieldType)
 		}
 
-		//  generate constructor
+		//  generate constructor body.
 		t, err := template.New("TypeScriptComplexType").Parse(__TypeScriptComplexTypeConstructor)
 		if err != nil {
 			log.Fatalln(err)
@@ -307,8 +308,9 @@ func (gen *CodeGenerator) TypeScriptComplexType(v *ComplexType) {
 
 		var tpl bytes.Buffer
 		if err := t.Execute(&tpl, map[string]interface{}{
-			"v":         v,
-			"hasParent": len(extends) > 0,
+			"v":          v,
+			"hasContent": contentCharData != "",
+			"hasParent":  len(extends) > 0,
 		}); err != nil {
 			log.Fatalln(err)
 		}

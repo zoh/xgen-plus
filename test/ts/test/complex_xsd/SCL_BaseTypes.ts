@@ -1,4 +1,4 @@
-import { TID,Constructor,TName,NodeID,TUnitMultiplierEnum } from "./BaseIndex"
+import { TUnitMultiplierEnum,Constructor,NodeID,TName,TID } from "./BaseIndex"
 
 
 // AgDesc ...
@@ -28,23 +28,27 @@ export enum THeaderNameStructureName {
 export class TBaseElement extends NodeID {
 	Text?: TText;
 	Private?: Array<TPrivate>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
-        this.Text = opts['Text'];
-    this.Private = opts['Private'];
+     this.Text = new TText(opts['Text']); 
+ this.Private = opts['Private']?.map(val => new TPrivate(val)); 
 
   }}
 
 // ComplexType 
 //  TUnNaming ...
 export class TUnNaming extends AgDesc(TBaseElement) {
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
@@ -55,9 +59,11 @@ export class TUnNaming extends AgDesc(TBaseElement) {
 //  TNaming ...
 export class TNaming extends AgDesc(TBaseElement) {
 	name: TName;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.name = opts['name'];
 
@@ -69,9 +75,11 @@ export class TNaming extends AgDesc(TBaseElement) {
 //  TIDNaming ...
 export class TIDNaming extends AgDesc(TBaseElement) {
 	id: TID;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.id = opts['id'];
 
@@ -82,9 +90,11 @@ export class TIDNaming extends AgDesc(TBaseElement) {
 // ComplexType 
 //  TAnyContentFromOtherNamespace ...
 export class TAnyContentFromOtherNamespace extends NodeID {
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
@@ -95,9 +105,11 @@ export class TAnyContentFromOtherNamespace extends NodeID {
 //  TText ...
 export class TText extends TAnyContentFromOtherNamespace {
 	source?: string;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.source = opts['source'];
 
@@ -110,9 +122,11 @@ export class TText extends TAnyContentFromOtherNamespace {
 export class TPrivate extends TAnyContentFromOtherNamespace {
 	type: TPrivateTypeNormalizedString;
 	source?: string;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.type = opts['type'];
     this.source = opts['source'];
@@ -125,13 +139,15 @@ export class TPrivate extends TAnyContentFromOtherNamespace {
 //  History ...
 export class History extends NodeID {
 	Hitem: Array<THitem>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
-        this.Hitem = opts['Hitem'];
+     this.Hitem = opts['Hitem']?.map(val => new THitem(val)); 
 
   }}
 
@@ -145,9 +161,11 @@ export class THeader extends NodeID {
 	nameStructure?: THeaderNameStructureName;
 	Text?: TText;
 	History?: History;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.id = opts['id'];
     this.version = opts['version'];
@@ -156,8 +174,8 @@ export class THeader extends NodeID {
     this.nameStructure = opts['nameStructure'];
 
     // Elements
-        this.Text = opts['Text'];
-    this.History = opts['History'];
+     this.Text = new TText(opts['Text']); 
+ this.History = new History(opts['History']); 
 
   }}
 
@@ -170,9 +188,11 @@ export class THitem extends TAnyContentFromOtherNamespace {
 	who?: string;
 	what?: string;
 	why?: string;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.version = opts['version'];
     this.revision = opts['revision'];
@@ -190,9 +210,12 @@ export class THitem extends TAnyContentFromOtherNamespace {
 export class TVal {
 Content: string; 
 	sGroup?: number;
+
   constructor(...args: any[]) {
     
-      const opts = args[0];
+    const opts = args[0];
+    if (typeof opts.Content != "undefined") 
+      this.Content = opts.Content; 
     // Attributes
       this.sGroup = opts['sGroup'];
 
@@ -206,9 +229,12 @@ export class TValueWithUnit {
 Content: number; 
 	unit: string;
 	multiplier?: TUnitMultiplierEnum;
+
   constructor(...args: any[]) {
     
-      const opts = args[0];
+    const opts = args[0];
+    if (typeof opts.Content != "undefined") 
+      this.Content = opts.Content; 
     // Attributes
       this.unit = opts['unit'];
     this.multiplier = opts['multiplier'];
@@ -222,9 +248,11 @@ Content: number;
 export class TVoltage extends TValueWithUnit {
 	unit: string;
 	multiplier?: TUnitMultiplierEnum;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.unit = opts['unit'];
     this.multiplier = opts['multiplier'];
@@ -238,9 +266,11 @@ export class TVoltage extends TValueWithUnit {
 export class TDurationInSec extends TValueWithUnit {
 	unit: string;
 	multiplier?: TUnitMultiplierEnum;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.unit = opts['unit'];
     this.multiplier = opts['multiplier'];
@@ -255,9 +285,12 @@ export class TDurationInMilliSec {
 Content: number; 
 	unit?: string;
 	multiplier?: TUnitMultiplierEnum;
+
   constructor(...args: any[]) {
     
-      const opts = args[0];
+    const opts = args[0];
+    if (typeof opts.Content != "undefined") 
+      this.Content = opts.Content; 
     // Attributes
       this.unit = opts['unit'];
     this.multiplier = opts['multiplier'];
@@ -272,9 +305,12 @@ export class TBitRateInMbPerSec {
 Content: number; 
 	unit?: string;
 	multiplier?: TUnitMultiplierEnum;
+
   constructor(...args: any[]) {
     
-      const opts = args[0];
+    const opts = args[0];
+    if (typeof opts.Content != "undefined") 
+      this.Content = opts.Content; 
     // Attributes
       this.unit = opts['unit'];
     this.multiplier = opts['multiplier'];

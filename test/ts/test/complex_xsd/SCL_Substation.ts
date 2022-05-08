@@ -1,4 +1,4 @@
-import { TLNClassEnum,TConnectivityNodeReference,TLineType,TPowerTransformerEnum,TProcessName,TVoltage,TIEDNameOrNone,TCommonConductingEquipmentEnum,TTransformerWindingEnum,TUnNaming,TLDInstOrEmpty,TAnyName,TPhaseEnum,TPrefix,TGeneralEquipmentEnum,Constructor,TNaming,TLNInstOrEmpty,TName,TProcessType } from "./BaseIndex"
+import { TVoltage,Constructor,TCommonConductingEquipmentEnum,TUnNaming,TName,TConnectivityNodeReference,TProcessType,TLNClassEnum,TLineType,TPhaseEnum,TLDInstOrEmpty,TProcessName,TTransformerWindingEnum,TPrefix,TGeneralEquipmentEnum,TLNInstOrEmpty,TAnyName,TNaming,TPowerTransformerEnum,TIEDNameOrNone } from "./BaseIndex"
 
 
 // AgVirtual ...
@@ -42,22 +42,26 @@ export type LineElement = TLine;
 //  TLNodeContainer ...
 export class TLNodeContainer extends TNaming {
 	LNode?: Array<TLNode>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
-        this.LNode = opts['LNode'];
+     this.LNode = opts['LNode']?.map(val => new TLNode(val)); 
 
   }}
 
 // ComplexType 
 //  TPowerSystemResource ...
 export class TPowerSystemResource extends TLNodeContainer {
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
@@ -69,23 +73,27 @@ export class TPowerSystemResource extends TLNodeContainer {
 export class TEquipmentContainer extends TPowerSystemResource {
 	PowerTransformer?: Array<TPowerTransformer>;
 	GeneralEquipment?: Array<TGeneralEquipment>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
-        this.PowerTransformer = opts['PowerTransformer'];
-    this.GeneralEquipment = opts['GeneralEquipment'];
+     this.PowerTransformer = opts['PowerTransformer']?.map(val => new TPowerTransformer(val)); 
+ this.GeneralEquipment = opts['GeneralEquipment']?.map(val => new TGeneralEquipment(val)); 
 
   }}
 
 // ComplexType 
 //  TEquipment ...
 export class TEquipment extends AgVirtual(TPowerSystemResource) {
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
@@ -97,14 +105,16 @@ export class TEquipment extends AgVirtual(TPowerSystemResource) {
 export class TAbstractConductingEquipment extends TEquipment {
 	Terminal?: Array<TTerminal>;
 	SubEquipment?: Array<TSubEquipment>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
-        this.Terminal = opts['Terminal'];
-    this.SubEquipment = opts['SubEquipment'];
+     this.Terminal = opts['Terminal']?.map(val => new TTerminal(val)); 
+ this.SubEquipment = opts['SubEquipment']?.map(val => new TSubEquipment(val)); 
 
   }}
 
@@ -113,14 +123,16 @@ export class TAbstractConductingEquipment extends TEquipment {
 export class TConductingEquipment extends TAbstractConductingEquipment {
 	type: TCommonConductingEquipmentEnum;
 	EqFunction?: Array<TEqFunction>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.type = opts['type'];
 
     // Elements
-        this.EqFunction = opts['EqFunction'];
+     this.EqFunction = opts['EqFunction']?.map(val => new TEqFunction(val)); 
 
   }}
 
@@ -129,14 +141,16 @@ export class TConductingEquipment extends TAbstractConductingEquipment {
 export class TSubEquipment extends AgVirtual(TPowerSystemResource) {
 	phase?: TPhaseEnum;
 	EqFunction?: Array<TEqFunction>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.phase = opts['phase'];
 
     // Elements
-        this.EqFunction = opts['EqFunction'];
+     this.EqFunction = opts['EqFunction']?.map(val => new TEqFunction(val)); 
 
   }}
 
@@ -147,16 +161,18 @@ export class TPowerTransformer extends TEquipment {
 	TransformerWinding: Array<TTransformerWinding>;
 	SubEquipment?: Array<TSubEquipment>;
 	EqFunction?: Array<TEqFunction>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.type = opts['type'];
 
     // Elements
-        this.TransformerWinding = opts['TransformerWinding'];
-    this.SubEquipment = opts['SubEquipment'];
-    this.EqFunction = opts['EqFunction'];
+     this.TransformerWinding = opts['TransformerWinding']?.map(val => new TTransformerWinding(val)); 
+ this.SubEquipment = opts['SubEquipment']?.map(val => new TSubEquipment(val)); 
+ this.EqFunction = opts['EqFunction']?.map(val => new TEqFunction(val)); 
 
   }}
 
@@ -167,16 +183,18 @@ export class TTransformerWinding extends TAbstractConductingEquipment {
 	TapChanger?: TTapChanger;
 	NeutralPoint?: TTerminal;
 	EqFunction?: Array<TEqFunction>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.type = opts['type'];
 
     // Elements
-        this.TapChanger = opts['TapChanger'];
-    this.NeutralPoint = opts['NeutralPoint'];
-    this.EqFunction = opts['EqFunction'];
+     this.TapChanger = new TTapChanger(opts['TapChanger']); 
+ this.NeutralPoint = new TTerminal(opts['NeutralPoint']); 
+ this.EqFunction = opts['EqFunction']?.map(val => new TEqFunction(val)); 
 
   }}
 
@@ -186,15 +204,17 @@ export class TTapChanger extends AgVirtual(TPowerSystemResource) {
 	type: string;
 	SubEquipment?: Array<TSubEquipment>;
 	EqFunction?: Array<TEqFunction>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.type = opts['type'];
 
     // Elements
-        this.SubEquipment = opts['SubEquipment'];
-    this.EqFunction = opts['EqFunction'];
+     this.SubEquipment = opts['SubEquipment']?.map(val => new TSubEquipment(val)); 
+ this.EqFunction = opts['EqFunction']?.map(val => new TEqFunction(val)); 
 
   }}
 
@@ -203,14 +223,16 @@ export class TTapChanger extends AgVirtual(TPowerSystemResource) {
 export class TGeneralEquipment extends TEquipment {
 	type: TGeneralEquipmentEnum;
 	EqFunction?: Array<TEqFunction>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.type = opts['type'];
 
     // Elements
-        this.EqFunction = opts['EqFunction'];
+     this.EqFunction = opts['EqFunction']?.map(val => new TEqFunction(val)); 
 
   }}
 
@@ -219,14 +241,16 @@ export class TGeneralEquipment extends TEquipment {
 export class TSubstation extends TEquipmentContainer {
 	VoltageLevel: Array<TVoltageLevel>;
 	Function?: Array<TFunction>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
-        this.VoltageLevel = opts['VoltageLevel'];
-    this.Function = opts['Function'];
+     this.VoltageLevel = opts['VoltageLevel']?.map(val => new TVoltageLevel(val)); 
+ this.Function = opts['Function']?.map(val => new TFunction(val)); 
 
   }}
 
@@ -238,17 +262,19 @@ export class TVoltageLevel extends TEquipmentContainer {
 	Voltage?: TVoltage;
 	Bay: Array<TBay>;
 	Function?: Array<TFunction>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.nomFreq = opts['nomFreq'];
     this.numPhases = opts['numPhases'];
 
     // Elements
-        this.Voltage = opts['Voltage'];
-    this.Bay = opts['Bay'];
-    this.Function = opts['Function'];
+     this.Voltage = new TVoltage(opts['Voltage']); 
+ this.Bay = opts['Bay']?.map(val => new TBay(val)); 
+ this.Function = opts['Function']?.map(val => new TFunction(val)); 
 
   }}
 
@@ -258,15 +284,17 @@ export class TBay extends TEquipmentContainer {
 	ConductingEquipment?: Array<TConductingEquipment>;
 	ConnectivityNode?: Array<TConnectivityNode>;
 	Function?: Array<TFunction>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
-        this.ConductingEquipment = opts['ConductingEquipment'];
-    this.ConnectivityNode = opts['ConnectivityNode'];
-    this.Function = opts['Function'];
+     this.ConductingEquipment = opts['ConductingEquipment']?.map(val => new TConductingEquipment(val)); 
+ this.ConnectivityNode = opts['ConnectivityNode']?.map(val => new TConnectivityNode(val)); 
+ this.Function = opts['Function']?.map(val => new TFunction(val)); 
 
   }}
 
@@ -279,9 +307,11 @@ export class TLNode extends TUnNaming {
 	lnClass: TLNClassEnum;
 	lnInst?: TLNInstOrEmpty;
 	lnType?: TName;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.iedName = opts['iedName'];
     this.ldInst = opts['ldInst'];
@@ -301,16 +331,18 @@ export class TFunction extends TPowerSystemResource {
 	SubFunction?: Array<TSubFunction>;
 	GeneralEquipment?: Array<TGeneralEquipment>;
 	ConductingEquipment?: Array<TConductingEquipment>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.type = opts['type'];
 
     // Elements
-        this.SubFunction = opts['SubFunction'];
-    this.GeneralEquipment = opts['GeneralEquipment'];
-    this.ConductingEquipment = opts['ConductingEquipment'];
+     this.SubFunction = opts['SubFunction']?.map(val => new TSubFunction(val)); 
+ this.GeneralEquipment = opts['GeneralEquipment']?.map(val => new TGeneralEquipment(val)); 
+ this.ConductingEquipment = opts['ConductingEquipment']?.map(val => new TConductingEquipment(val)); 
 
   }}
 
@@ -321,16 +353,18 @@ export class TSubFunction extends TPowerSystemResource {
 	GeneralEquipment?: Array<TGeneralEquipment>;
 	ConductingEquipment?: Array<TConductingEquipment>;
 	SubFunction?: Array<TSubFunction>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.type = opts['type'];
 
     // Elements
-        this.GeneralEquipment = opts['GeneralEquipment'];
-    this.ConductingEquipment = opts['ConductingEquipment'];
-    this.SubFunction = opts['SubFunction'];
+     this.GeneralEquipment = opts['GeneralEquipment']?.map(val => new TGeneralEquipment(val)); 
+ this.ConductingEquipment = opts['ConductingEquipment']?.map(val => new TConductingEquipment(val)); 
+ this.SubFunction = opts['SubFunction']?.map(val => new TSubFunction(val)); 
 
   }}
 
@@ -340,24 +374,28 @@ export class TAbstractEqFuncSubFunc extends TPowerSystemResource {
 	type?: string;
 	GeneralEquipment?: Array<TGeneralEquipment>;
 	EqSubFunction?: Array<TEqSubFunction>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.type = opts['type'];
 
     // Elements
-        this.GeneralEquipment = opts['GeneralEquipment'];
-    this.EqSubFunction = opts['EqSubFunction'];
+     this.GeneralEquipment = opts['GeneralEquipment']?.map(val => new TGeneralEquipment(val)); 
+ this.EqSubFunction = opts['EqSubFunction']?.map(val => new TEqSubFunction(val)); 
 
   }}
 
 // ComplexType 
 //  TEqFunction ...
 export class TEqFunction extends TAbstractEqFuncSubFunc {
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
@@ -367,9 +405,11 @@ export class TEqFunction extends TAbstractEqFuncSubFunc {
 // ComplexType 
 //  TEqSubFunction ...
 export class TEqSubFunction extends TAbstractEqFuncSubFunc {
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
@@ -380,9 +420,11 @@ export class TEqSubFunction extends TAbstractEqFuncSubFunc {
 //  TConnectivityNode ...
 export class TConnectivityNode extends TLNodeContainer {
 	pathName: TConnectivityNodeReference;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.pathName = opts['pathName'];
 
@@ -401,9 +443,11 @@ export class TTerminal extends TUnNaming {
 	bayName?: TName;
 	cNodeName: TName;
 	lineName?: TName;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.name = opts['name'];
     this.connectivityNode = opts['connectivityNode'];
@@ -423,14 +467,16 @@ export class TTerminal extends TUnNaming {
 export class TGeneralEquipmentContainer extends TPowerSystemResource {
 	GeneralEquipment?: Array<TGeneralEquipment>;
 	Function?: Array<TFunction>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
-        this.GeneralEquipment = opts['GeneralEquipment'];
-    this.Function = opts['Function'];
+     this.GeneralEquipment = opts['GeneralEquipment']?.map(val => new TGeneralEquipment(val)); 
+ this.Function = opts['Function']?.map(val => new TFunction(val)); 
 
   }}
 
@@ -443,18 +489,20 @@ export class TLine extends TGeneralEquipmentContainer {
 	Voltage?: TVoltage;
 	ConductingEquipment: Array<TConductingEquipment>;
 	ConnectivityNode?: Array<TConnectivityNode>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.type = opts['type'];
     this.nomFreq = opts['nomFreq'];
     this.numPhases = opts['numPhases'];
 
     // Elements
-        this.Voltage = opts['Voltage'];
-    this.ConductingEquipment = opts['ConductingEquipment'];
-    this.ConnectivityNode = opts['ConnectivityNode'];
+     this.Voltage = new TVoltage(opts['Voltage']); 
+ this.ConductingEquipment = opts['ConductingEquipment']?.map(val => new TConductingEquipment(val)); 
+ this.ConnectivityNode = opts['ConnectivityNode']?.map(val => new TConnectivityNode(val)); 
 
   }}
 
@@ -466,16 +514,18 @@ export class TProcess extends TGeneralEquipmentContainer {
 	Substation?: Array<TSubstation>;
 	Line?: Array<TLine>;
 	Process?: Array<TProcess>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.type = opts['type'];
 
     // Elements
-        this.ConductingEquipment = opts['ConductingEquipment'];
-    this.Substation = opts['Substation'];
-    this.Line = opts['Line'];
-    this.Process = opts['Process'];
+     this.ConductingEquipment = opts['ConductingEquipment']?.map(val => new TConductingEquipment(val)); 
+ this.Substation = opts['Substation']?.map(val => new TSubstation(val)); 
+ this.Line = opts['Line']?.map(val => new TLine(val)); 
+ this.Process = opts['Process']?.map(val => new TProcess(val)); 
 
   }}

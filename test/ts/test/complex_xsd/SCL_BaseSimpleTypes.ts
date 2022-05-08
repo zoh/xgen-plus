@@ -60,8 +60,8 @@ export type TIEDNameIsNone = string;
 // Union type
 // TIEDNameOrNone ...
 export type TIEDNameOrNone =
-	|	TIEDNameIsNone
 	|	TIEDName
+	|	TIEDNameIsNone
 
 // Simple type
 // TOnlyRelativeIEDName ...
@@ -70,8 +70,8 @@ export type TOnlyRelativeIEDName = string;
 // Union type
 // TIEDNameOrRelative ...
 export type TIEDNameOrRelative =
-	|	TOnlyRelativeIEDName
 	|	TIEDName
+	|	TOnlyRelativeIEDName
 
 // Simple type
 // TLDName ...

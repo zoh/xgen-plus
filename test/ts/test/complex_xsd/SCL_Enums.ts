@@ -89,8 +89,8 @@ export type TExtensionAttributeNameEnum = string;
 // Union type
 // TAttributeNameEnum ...
 export type TAttributeNameEnum =
-	|	TExtensionAttributeNameEnum
 	|	TPredefinedAttributeNameEnum
+	|	TExtensionAttributeNameEnum
 
 // Simple type
 // TPredefinedCommonConductingEquipmentEnum ...
@@ -485,21 +485,21 @@ export enum TDomainLNGroupZEnum {
 // Union type
 // TDomainLNEnum ...
 export type TDomainLNEnum =
-	|	TDomainLNGroupKEnum
-	|	TDomainLNGroupZEnum
-	|	TDomainLNGroupPEnum
-	|	TDomainLNGroupFEnum
-	|	TDomainLNGroupMEnum
-	|	TDomainLNGroupQEnum
-	|	TDomainLNGroupSEnum
 	|	TDomainLNGroupTEnum
 	|	TDomainLNGroupXEnum
-	|	TDomainLNGroupYEnum
-	|	TDomainLNGroupAEnum
 	|	TDomainLNGroupCEnum
-	|	TDomainLNGroupGEnum
 	|	TDomainLNGroupIEnum
+	|	TDomainLNGroupSEnum
+	|	TDomainLNGroupZEnum
+	|	TDomainLNGroupAEnum
+	|	TDomainLNGroupPEnum
+	|	TDomainLNGroupYEnum
+	|	TDomainLNGroupMEnum
+	|	TDomainLNGroupQEnum
 	|	TDomainLNGroupREnum
+	|	TDomainLNGroupFEnum
+	|	TDomainLNGroupGEnum
+	|	TDomainLNGroupKEnum
 
 // Union type
 // TPredefinedLNClassEnum ...
@@ -514,8 +514,8 @@ export type TExtensionLNClassEnum = string;
 // Union type
 // TLNClassEnum ...
 export type TLNClassEnum =
-	|	TPredefinedLNClassEnum
 	|	TExtensionLNClassEnum
+	|	TPredefinedLNClassEnum
 
 // Simple type
 // TPredefinedCDCEnum ...

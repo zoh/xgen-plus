@@ -1,4 +1,4 @@
-import { TPrefix,TSMVDeliveryEnum,TGSEControlTypeEnum,TLNInstOrEmpty,TSclRevision,TUnNaming,TLDInst,TFullDOName,TValKindEnum,TCBName,TNaming,TAssociationKindEnum,TFCEnum,TMessageID,TSclRelease,TPredefinedTypeOfSecurityEnum,TAttributeNameEnum,Constructor,TRightEnum,TAssociationID,TSmpMod,AgDesc,TFullAttributeName,TDataName,TVal,TServiceSettingsNoDynEnum,TLNClassEnum,TIEDName,TAccessPointName,TSclVersion,NodeID,TDataSetName,TLogName,TName,TLNInst,TLDName,TIEDNameOrRelative,TAnyContentFromOtherNamespace,TServiceType,TServiceSettingsEnum } from "./BaseIndex"
+import { TLDInst,TServiceSettingsEnum,TSclVersion,TName,TAccessPointName,TServiceSettingsNoDynEnum,TSmpMod,TIEDName,TPredefinedTypeOfSecurityEnum,TUnNaming,TMessageID,TFullDOName,TLogName,Constructor,AgDesc,TLNInst,TSMVDeliveryEnum,TRightEnum,TAnyContentFromOtherNamespace,TVal,TSclRevision,TAssociationID,TGSEControlTypeEnum,TLNInstOrEmpty,TCBName,TServiceType,TAttributeNameEnum,TDataSetName,TDataName,TValKindEnum,TLNClassEnum,TSclRelease,TFCEnum,TPrefix,TFullAttributeName,TIEDNameOrRelative,TAssociationKindEnum,NodeID,TNaming,TLDName } from "./BaseIndex"
 
 
 // AgAuthentication ...
@@ -185,9 +185,11 @@ export class TIED extends TUnNaming {
 	Services?: TServices;
 	AccessPoint: Array<TAccessPoint>;
 	KDC?: Array<TKDC>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.name = opts['name'];
     this.type = opts['type'];
@@ -200,9 +202,9 @@ export class TIED extends TUnNaming {
     this.owner = opts['owner'];
 
     // Elements
-        this.Services = opts['Services'];
-    this.AccessPoint = opts['AccessPoint'];
-    this.KDC = opts['KDC'];
+     this.Services = new TServices(opts['Services']); 
+ this.AccessPoint = opts['AccessPoint']?.map(val => new TAccessPoint(val)); 
+ this.KDC = opts['KDC']?.map(val => new TKDC(val)); 
 
   }}
 
@@ -243,46 +245,48 @@ export class TServices extends NodeID {
 	RedProt?: TRedProt;
 	TimeSyncProt?: TTimeSyncProt;
 	CommProt?: TCommProt;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.nameLength = opts['nameLength'];
 
     // Elements
-        this.DynAssociation = opts['DynAssociation'];
-    this.SettingGroups = opts['SettingGroups'];
-    this.GetDirectory = opts['GetDirectory'];
-    this.GetDataObjectDefinition = opts['GetDataObjectDefinition'];
-    this.DataObjectDirectory = opts['DataObjectDirectory'];
-    this.GetDataSetValue = opts['GetDataSetValue'];
-    this.SetDataSetValue = opts['SetDataSetValue'];
-    this.DataSetDirectory = opts['DataSetDirectory'];
-    this.ConfDataSet = opts['ConfDataSet'];
-    this.DynDataSet = opts['DynDataSet'];
-    this.ReadWrite = opts['ReadWrite'];
-    this.TimerActivatedControl = opts['TimerActivatedControl'];
-    this.ConfReportControl = opts['ConfReportControl'];
-    this.GetCBValues = opts['GetCBValues'];
-    this.ConfLogControl = opts['ConfLogControl'];
-    this.ReportSettings = opts['ReportSettings'];
-    this.LogSettings = opts['LogSettings'];
-    this.GSESettings = opts['GSESettings'];
-    this.SMVSettings = opts['SMVSettings'];
-    this.GSEDir = opts['GSEDir'];
-    this.GOOSE = opts['GOOSE'];
-    this.GSSE = opts['GSSE'];
-    this.SMVsc = opts['SMVsc'];
-    this.FileHandling = opts['FileHandling'];
-    this.ConfLNs = opts['ConfLNs'];
-    this.ClientServices = opts['ClientServices'];
-    this.ConfLdName = opts['ConfLdName'];
-    this.SupSubscription = opts['SupSubscription'];
-    this.ConfSigRef = opts['ConfSigRef'];
-    this.ValueHandling = opts['ValueHandling'];
-    this.RedProt = opts['RedProt'];
-    this.TimeSyncProt = opts['TimeSyncProt'];
-    this.CommProt = opts['CommProt'];
+     this.DynAssociation = new TServiceWithOptionalMax(opts['DynAssociation']); 
+ this.SettingGroups = new TSettingGroups(opts['SettingGroups']); 
+ this.GetDirectory = new TServiceYesNo(opts['GetDirectory']); 
+ this.GetDataObjectDefinition = new TServiceYesNo(opts['GetDataObjectDefinition']); 
+ this.DataObjectDirectory = new TServiceYesNo(opts['DataObjectDirectory']); 
+ this.GetDataSetValue = new TServiceYesNo(opts['GetDataSetValue']); 
+ this.SetDataSetValue = new TServiceYesNo(opts['SetDataSetValue']); 
+ this.DataSetDirectory = new TServiceYesNo(opts['DataSetDirectory']); 
+ this.ConfDataSet = new TServiceForConfDataSet(opts['ConfDataSet']); 
+ this.DynDataSet = new TServiceWithMaxAndMaxAttributes(opts['DynDataSet']); 
+ this.ReadWrite = new TServiceYesNo(opts['ReadWrite']); 
+ this.TimerActivatedControl = new TServiceYesNo(opts['TimerActivatedControl']); 
+ this.ConfReportControl = new TServiceConfReportControl(opts['ConfReportControl']); 
+ this.GetCBValues = new TServiceYesNo(opts['GetCBValues']); 
+ this.ConfLogControl = new TServiceWithMaxNonZero(opts['ConfLogControl']); 
+ this.ReportSettings = new TReportSettings(opts['ReportSettings']); 
+ this.LogSettings = new TLogSettings(opts['LogSettings']); 
+ this.GSESettings = new TGSESettings(opts['GSESettings']); 
+ this.SMVSettings = new TSMVSettings(opts['SMVSettings']); 
+ this.GSEDir = new TServiceYesNo(opts['GSEDir']); 
+ this.GOOSE = new TGOOSEcapabilities(opts['GOOSE']); 
+ this.GSSE = new TServiceWithMax(opts['GSSE']); 
+ this.SMVsc = new TSMVsc(opts['SMVsc']); 
+ this.FileHandling = new TFileHandling(opts['FileHandling']); 
+ this.ConfLNs = new TConfLNs(opts['ConfLNs']); 
+ this.ClientServices = new TClientServices(opts['ClientServices']); 
+ this.ConfLdName = new TServiceYesNo(opts['ConfLdName']); 
+ this.SupSubscription = new TSupSubscription(opts['SupSubscription']); 
+ this.ConfSigRef = new TServiceWithMaxNonZero(opts['ConfSigRef']); 
+ this.ValueHandling = new TValueHandling(opts['ValueHandling']); 
+ this.RedProt = new TRedProt(opts['RedProt']); 
+ this.TimeSyncProt = new TTimeSyncProt(opts['TimeSyncProt']); 
+ this.CommProt = new TCommProt(opts['CommProt']); 
 
   }}
 
@@ -299,9 +303,11 @@ export class TAccessPoint extends TUnNaming {
 	Services?: TServices;
 	GOOSESecurity?: Array<TCertificate>;
 	SMVSecurity?: Array<TCertificate>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.name = opts['name'];
     this.router = opts['router'];
@@ -309,12 +315,12 @@ export class TAccessPoint extends TUnNaming {
     this.kdc = opts['kdc'];
 
     // Elements
-        this.Server = opts['Server'];
-    this.LN = opts['LN'];
-    this.ServerAt = opts['ServerAt'];
-    this.Services = opts['Services'];
-    this.GOOSESecurity = opts['GOOSESecurity'];
-    this.SMVSecurity = opts['SMVSecurity'];
+     this.Server = new TServer(opts['Server']); 
+ this.LN = opts['LN']?.map(val => new TLN(val)); 
+ this.ServerAt = new TServerAt(opts['ServerAt']); 
+ this.Services = new TServices(opts['Services']); 
+ this.GOOSESecurity = opts['GOOSESecurity']?.map(val => new TCertificate(val)); 
+ this.SMVSecurity = opts['SMVSecurity']?.map(val => new TCertificate(val)); 
 
   }}
 
@@ -325,16 +331,18 @@ export class TCertificate extends TNaming {
 	serialNumber: TCertificateSerialNumberNormalizedString;
 	Subject: TCert;
 	IssuerName: TCert;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.xferNumber = opts['xferNumber'];
     this.serialNumber = opts['serialNumber'];
 
     // Elements
-        this.Subject = opts['Subject'];
-    this.IssuerName = opts['IssuerName'];
+     this.Subject = new TCert(opts['Subject']); 
+ this.IssuerName = new TCert(opts['IssuerName']); 
 
   }}
 
@@ -343,9 +351,11 @@ export class TCertificate extends TNaming {
 export class TCert extends NodeID {
 	commonName: TCertCommonNameNormalizedString;
 	idHierarchy: TCertIdHierarchyNormalizedString;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.commonName = opts['commonName'];
     this.idHierarchy = opts['idHierarchy'];
@@ -358,9 +368,11 @@ export class TCert extends NodeID {
 //  TServerAt ...
 export class TServerAt extends TUnNaming {
 	apName: TAccessPointName;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.apName = opts['apName'];
 
@@ -371,9 +383,11 @@ export class TServerAt extends TUnNaming {
 // ComplexType 
 //  Authentication ...
 export class Authentication extends AgAuthentication(NodeID) {
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
@@ -387,16 +401,18 @@ export class TServer extends TUnNaming {
 	Authentication: Authentication;
 	LDevice: Array<TLDevice>;
 	Association?: Array<TAssociation>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.timeout = opts['timeout'];
 
     // Elements
-        this.Authentication = opts['Authentication'];
-    this.LDevice = opts['LDevice'];
-    this.Association = opts['Association'];
+     this.Authentication = new Authentication(opts['Authentication']); 
+ this.LDevice = opts['LDevice']?.map(val => new TLDevice(val)); 
+ this.Association = opts['Association']?.map(val => new TAssociation(val)); 
 
   }}
 
@@ -408,26 +424,30 @@ export class TLDevice extends TUnNaming {
 	LN0: LN0;
 	LN?: Array<TLN>;
 	AccessControl?: TAccessControl;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.inst = opts['inst'];
     this.ldName = opts['ldName'];
 
     // Elements
-        this.LN0 = opts['LN0'];
-    this.LN = opts['LN'];
-    this.AccessControl = opts['AccessControl'];
+     this.LN0 = new LN0(opts['LN0']); 
+ this.LN = opts['LN']?.map(val => new TLN(val)); 
+ this.AccessControl = new TAccessControl(opts['AccessControl']); 
 
   }}
 
 // ComplexType 
 //  TAccessControl ...
 export class TAccessControl extends TAnyContentFromOtherNamespace {
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
@@ -439,9 +459,11 @@ export class TAccessControl extends TAnyContentFromOtherNamespace {
 export class TAssociation extends AgLNRef(NodeID) {
 	kind: TAssociationKindEnum;
 	associationID?: TAssociationID;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.kind = opts['kind'];
     this.associationID = opts['associationID'];
@@ -460,19 +482,21 @@ export class TAnyLN extends TUnNaming {
 	DOI?: Array<TDOI>;
 	Inputs?: TInputs;
 	Log?: Array<TLog>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.lnType = opts['lnType'];
 
     // Elements
-        this.DataSet = opts['DataSet'];
-    this.ReportControl = opts['ReportControl'];
-    this.LogControl = opts['LogControl'];
-    this.DOI = opts['DOI'];
-    this.Inputs = opts['Inputs'];
-    this.Log = opts['Log'];
+     this.DataSet = opts['DataSet']?.map(val => new TDataSet(val)); 
+ this.ReportControl = opts['ReportControl']?.map(val => new TReportControl(val)); 
+ this.LogControl = opts['LogControl']?.map(val => new TLogControl(val)); 
+ this.DOI = opts['DOI']?.map(val => new TDOI(val)); 
+ this.Inputs = new TInputs(opts['Inputs']); 
+ this.Log = opts['Log']?.map(val => new TLog(val)); 
 
   }}
 
@@ -482,9 +506,11 @@ export class TLN extends TAnyLN {
 	prefix?: TPrefix;
 	lnClass: TLNClassEnum;
 	inst: TLNInst;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.prefix = opts['prefix'];
     this.lnClass = opts['lnClass'];
@@ -502,17 +528,19 @@ export class TLN0 extends TAnyLN {
 	GSEControl?: Array<TGSEControl>;
 	SampledValueControl?: Array<TSampledValueControl>;
 	SettingControl?: TSettingControl;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.lnClass = opts['lnClass'];
     this.inst = opts['inst'];
 
     // Elements
-        this.GSEControl = opts['GSEControl'];
-    this.SampledValueControl = opts['SampledValueControl'];
-    this.SettingControl = opts['SettingControl'];
+     this.GSEControl = opts['GSEControl']?.map(val => new TGSEControl(val)); 
+ this.SampledValueControl = opts['SampledValueControl']?.map(val => new TSampledValueControl(val)); 
+ this.SettingControl = new TSettingControl(opts['SettingControl']); 
 
   }}
 
@@ -521,14 +549,16 @@ export class TLN0 extends TAnyLN {
 export class TDataSet extends TUnNaming {
 	name: TDataSetName;
 	FCDA: Array<TFCDA>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.name = opts['name'];
 
     // Elements
-        this.FCDA = opts['FCDA'];
+     this.FCDA = opts['FCDA']?.map(val => new TFCDA(val)); 
 
   }}
 
@@ -543,9 +573,11 @@ export class TFCDA extends NodeID {
 	daName?: TFullAttributeName;
 	fc: TFCEnum;
 	ix?: number;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.ldInst = opts['ldInst'];
     this.prefix = opts['prefix'];
@@ -565,9 +597,11 @@ export class TFCDA extends NodeID {
 export class TControl extends TUnNaming {
 	name: TCBName;
 	datSet?: TDataSetName;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.name = opts['name'];
     this.datSet = opts['datSet'];
@@ -581,14 +615,16 @@ export class TControl extends TUnNaming {
 export class TControlWithTriggerOpt extends TControl {
 	intgPd?: number;
 	TrgOps?: TTrgOps;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.intgPd = opts['intgPd'];
 
     // Elements
-        this.TrgOps = opts['TrgOps'];
+     this.TrgOps = new TTrgOps(opts['TrgOps']); 
 
   }}
 
@@ -600,9 +636,11 @@ export class TTrgOps extends NodeID {
 	dupd?: boolean;
 	period?: boolean;
 	gi?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.dchg = opts['dchg'];
     this.qchg = opts['qchg'];
@@ -617,9 +655,11 @@ export class TTrgOps extends NodeID {
 // ComplexType 
 //  OptFields ...
 export class OptFields extends AgOptFields(NodeID) {
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
@@ -636,9 +676,11 @@ export class TReportControl extends TControlWithTriggerOpt {
 	indexed?: boolean;
 	OptFields: OptFields;
 	RptEnabled?: TRptEnabled;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.rptID = opts['rptID'];
     this.confRev = opts['confRev'];
@@ -647,8 +689,8 @@ export class TReportControl extends TControlWithTriggerOpt {
     this.indexed = opts['indexed'];
 
     // Elements
-        this.OptFields = opts['OptFields'];
-    this.RptEnabled = opts['RptEnabled'];
+     this.OptFields = new OptFields(opts['OptFields']); 
+ this.RptEnabled = new TRptEnabled(opts['RptEnabled']); 
 
   }}
 
@@ -657,14 +699,16 @@ export class TReportControl extends TControlWithTriggerOpt {
 export class TRptEnabled extends TUnNaming {
 	max?: TRptEnabledMaxUnsignedInt;
 	ClientLN?: Array<TClientLN>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.max = opts['max'];
 
     // Elements
-        this.ClientLN = opts['ClientLN'];
+     this.ClientLN = opts['ClientLN']?.map(val => new TClientLN(val)); 
 
   }}
 
@@ -672,9 +716,11 @@ export class TRptEnabled extends TUnNaming {
 //  TClientLN ...
 export class TClientLN extends AgLNRef(NodeID) {
 	apRef?: TAccessPointName;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.apRef = opts['apRef'];
 
@@ -693,9 +739,11 @@ export class TLogControl extends TControlWithTriggerOpt {
 	logEna?: boolean;
 	reasonCode?: boolean;
 	bufTime?: number;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.ldInst = opts['ldInst'];
     this.prefix = opts['prefix'];
@@ -714,13 +762,15 @@ export class TLogControl extends TControlWithTriggerOpt {
 //  TInputs ...
 export class TInputs extends TUnNaming {
 	ExtRef: Array<TExtRef>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
-        this.ExtRef = opts['ExtRef'];
+     this.ExtRef = opts['ExtRef']?.map(val => new TExtRef(val)); 
 
   }}
 
@@ -745,9 +795,11 @@ export class TExtRef extends AgDesc(NodeID) {
 	pLN?: TLNClassEnum;
 	pDO?: TFullDOName;
 	pDA?: TFullAttributeName;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.iedName = opts['iedName'];
     this.ldInst = opts['ldInst'];
@@ -776,9 +828,11 @@ export class TExtRef extends AgDesc(NodeID) {
 //  TLog ...
 export class TLog extends TUnNaming {
 	name?: TLogName;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.name = opts['name'];
 
@@ -795,9 +849,12 @@ export class IEDName extends NodeID {
 	prefix?: TPrefix;
 	lnClass?: TLNClassEnum;
 	lnInst?: TLNInst;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    if (typeof opts.Content != "undefined") 
+      this.Content = opts.Content; 
     // Attributes
       this.apRef = opts['apRef'];
     this.ldInst = opts['ldInst'];
@@ -814,14 +871,16 @@ export class IEDName extends NodeID {
 export class TControlWithIEDName extends TControl {
 	confRev?: number;
 	IEDName?: Array<IEDName>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.confRev = opts['confRev'];
 
     // Elements
-        this.IEDName = opts['IEDName'];
+     this.IEDName = opts['IEDName']?.map(val => new IEDName(val)); 
 
   }}
 
@@ -830,9 +889,12 @@ export class TControlWithIEDName extends TControl {
 export class TProtocol {
 Content: string; 
 	mustUnderstand: boolean;
+
   constructor(...args: any[]) {
     
-      const opts = args[0];
+    const opts = args[0];
+    if (typeof opts.Content != "undefined") 
+      this.Content = opts.Content; 
     // Attributes
       this.mustUnderstand = opts['mustUnderstand'];
 
@@ -848,9 +910,11 @@ export class TGSEControl extends TControlWithIEDName {
 	fixedOffs?: boolean;
 	securityEnable?: string;
 	Protocol?: TProtocol;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.type = opts['type'];
     this.appID = opts['appID'];
@@ -858,16 +922,18 @@ export class TGSEControl extends TControlWithIEDName {
     this.securityEnable = opts['securityEnable'];
 
     // Elements
-        this.Protocol = opts['Protocol'];
+     this.Protocol = new TProtocol(opts['Protocol']); 
 
   }}
 
 // ComplexType 
 //  SmvOpts ...
 export class SmvOpts extends AgSmvOpts(NodeID) {
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
@@ -885,9 +951,11 @@ export class TSampledValueControl extends TControlWithIEDName {
 	securityEnable?: TPredefinedTypeOfSecurityEnum;
 	SmvOpts: SmvOpts;
 	Protocol?: TProtocol;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.smvID = opts['smvID'];
     this.multicast = opts['multicast'];
@@ -897,8 +965,8 @@ export class TSampledValueControl extends TControlWithIEDName {
     this.securityEnable = opts['securityEnable'];
 
     // Elements
-        this.SmvOpts = opts['SmvOpts'];
-    this.Protocol = opts['Protocol'];
+     this.SmvOpts = new SmvOpts(opts['SmvOpts']); 
+ this.Protocol = new TProtocol(opts['Protocol']); 
 
   }}
 
@@ -908,9 +976,11 @@ export class TSettingControl extends TUnNaming {
 	numOfSGs: TSettingControlNumOfSGsUnsignedInt;
 	actSG?: TSettingControlActSGUnsignedInt;
 	resvTms?: number;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.numOfSGs = opts['numOfSGs'];
     this.actSG = opts['actSG'];
@@ -928,17 +998,19 @@ export class TDOI extends TUnNaming {
 	accessControl?: string;
 	SDI?: Array<TSDI>;
 	DAI?: Array<TDAI>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.name = opts['name'];
     this.ix = opts['ix'];
     this.accessControl = opts['accessControl'];
 
     // Elements
-        this.SDI = opts['SDI'];
-    this.DAI = opts['DAI'];
+     this.SDI = opts['SDI']?.map(val => new TSDI(val)); 
+ this.DAI = opts['DAI']?.map(val => new TDAI(val)); 
 
   }}
 
@@ -950,17 +1022,19 @@ export class TSDI extends TUnNaming {
 	sAddr?: string;
 	SDI?: Array<TSDI>;
 	DAI?: Array<TDAI>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.name = opts['name'];
     this.ix = opts['ix'];
     this.sAddr = opts['sAddr'];
 
     // Elements
-        this.SDI = opts['SDI'];
-    this.DAI = opts['DAI'];
+     this.SDI = opts['SDI']?.map(val => new TSDI(val)); 
+ this.DAI = opts['DAI']?.map(val => new TDAI(val)); 
 
   }}
 
@@ -973,9 +1047,11 @@ export class TDAI extends TUnNaming {
 	ix?: number;
 	valImport?: boolean;
 	Val?: Array<TVal>;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.name = opts['name'];
     this.sAddr = opts['sAddr'];
@@ -984,16 +1060,18 @@ export class TDAI extends TUnNaming {
     this.valImport = opts['valImport'];
 
     // Elements
-        this.Val = opts['Val'];
+     this.Val = opts['Val']?.map(val => new TVal(val)); 
 
   }}
 
 // ComplexType 
 //  TServiceYesNo ...
 export class TServiceYesNo extends NodeID {
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
@@ -1004,9 +1082,11 @@ export class TServiceYesNo extends NodeID {
 //  TServiceWithOptionalMax ...
 export class TServiceWithOptionalMax extends NodeID {
 	max?: number;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.max = opts['max'];
 
@@ -1018,9 +1098,11 @@ export class TServiceWithOptionalMax extends NodeID {
 //  TServiceWithMax ...
 export class TServiceWithMax extends NodeID {
 	max: number;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.max = opts['max'];
 
@@ -1032,9 +1114,11 @@ export class TServiceWithMax extends NodeID {
 //  TServiceWithMaxNonZero ...
 export class TServiceWithMaxNonZero extends NodeID {
 	max: TServiceWithMaxNonZeroMaxUnsignedInt;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.max = opts['max'];
 
@@ -1048,9 +1132,11 @@ export class TServiceConfReportControl extends TServiceWithMax {
 	bufMode?: TServiceConfReportControlBufModeName;
 	bufConf?: boolean;
 	maxBuf?: number;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.bufMode = opts['bufMode'];
     this.bufConf = opts['bufConf'];
@@ -1064,9 +1150,11 @@ export class TServiceConfReportControl extends TServiceWithMax {
 //  TServiceWithMaxAndMaxAttributes ...
 export class TServiceWithMaxAndMaxAttributes extends TServiceWithMax {
 	maxAttributes?: TServiceWithMaxAndMaxAttributesMaxAttributesUnsignedInt;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.maxAttributes = opts['maxAttributes'];
 
@@ -1078,9 +1166,11 @@ export class TServiceWithMaxAndMaxAttributes extends TServiceWithMax {
 //  TServiceWithMaxAndModify ...
 export class TServiceWithMaxAndModify extends TServiceWithMax {
 	modify?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.modify = opts['modify'];
 
@@ -1092,9 +1182,11 @@ export class TServiceWithMaxAndModify extends TServiceWithMax {
 //  TServiceForConfDataSet ...
 export class TServiceForConfDataSet extends TServiceWithMaxAndMaxAttributes {
 	modify?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.modify = opts['modify'];
 
@@ -1121,9 +1213,11 @@ export class TClientServices extends NodeID {
 	noIctBinding?: boolean;
 	TimeSyncProt?: TTimeSyncProt;
 	McSecurity?: TMcSecurity;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.goose = opts['goose'];
     this.gsse = opts['gsse'];
@@ -1141,8 +1235,8 @@ export class TClientServices extends NodeID {
     this.noIctBinding = opts['noIctBinding'];
 
     // Elements
-        this.TimeSyncProt = opts['TimeSyncProt'];
-    this.McSecurity = opts['McSecurity'];
+     this.TimeSyncProt = new TTimeSyncProt(opts['TimeSyncProt']); 
+ this.McSecurity = new TMcSecurity(opts['McSecurity']); 
 
   }}
 
@@ -1151,9 +1245,11 @@ export class TClientServices extends NodeID {
 export class TServiceSettings extends NodeID {
 	cbName?: TServiceSettingsNoDynEnum;
 	datSet?: TServiceSettingsEnum;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.cbName = opts['cbName'];
     this.datSet = opts['datSet'];
@@ -1172,9 +1268,11 @@ export class TReportSettings extends TServiceSettings {
 	intgPd?: TServiceSettingsEnum;
 	resvTms?: boolean;
 	owner?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.rptID = opts['rptID'];
     this.optFields = opts['optFields'];
@@ -1194,9 +1292,11 @@ export class TLogSettings extends TServiceSettings {
 	logEna?: TServiceSettingsEnum;
 	trgOps?: TServiceSettingsEnum;
 	intgPd?: TServiceSettingsEnum;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.logEna = opts['logEna'];
     this.trgOps = opts['trgOps'];
@@ -1213,16 +1313,18 @@ export class TGSESettings extends TServiceSettings {
 	dataLabel?: TServiceSettingsEnum;
 	kdaParticipant?: boolean;
 	McSecurity?: TMcSecurity;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.appID = opts['appID'];
     this.dataLabel = opts['dataLabel'];
     this.kdaParticipant = opts['kdaParticipant'];
 
     // Elements
-        this.McSecurity = opts['McSecurity'];
+     this.McSecurity = new TMcSecurity(opts['McSecurity']); 
 
   }}
 
@@ -1241,9 +1343,11 @@ export class TSMVSettings extends TServiceSettings {
 	SamplesPerSec: number;
 	SecPerSamples: number;
 	McSecurity?: TMcSecurity;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.svID = opts['svID'];
     this.optFields = opts['optFields'];
@@ -1255,10 +1359,10 @@ export class TSMVSettings extends TServiceSettings {
     this.kdaParticipant = opts['kdaParticipant'];
 
     // Elements
-        this.SmpRate = opts['SmpRate'];
-    this.SamplesPerSec = opts['SamplesPerSec'];
-    this.SecPerSamples = opts['SecPerSamples'];
-    this.McSecurity = opts['McSecurity'];
+     this.SmpRate = opts['SmpRate']?.map(val => new number(val)); 
+ this.SamplesPerSec = opts['SamplesPerSec']?.map(val => new number(val)); 
+ this.SecPerSamples = opts['SecPerSamples']?.map(val => new number(val)); 
+ this.McSecurity = new TMcSecurity(opts['McSecurity']); 
 
   }}
 
@@ -1267,9 +1371,11 @@ export class TSMVSettings extends TServiceSettings {
 export class TConfLNs extends NodeID {
 	fixPrefix?: boolean;
 	fixLnInst?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.fixPrefix = opts['fixPrefix'];
     this.fixLnInst = opts['fixLnInst'];
@@ -1282,9 +1388,11 @@ export class TConfLNs extends NodeID {
 //  TValueHandling ...
 export class TValueHandling extends NodeID {
 	setToRO?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.setToRO = opts['setToRO'];
 
@@ -1298,9 +1406,11 @@ export class TFileHandling extends TServiceYesNo {
 	mms?: boolean;
 	ftp?: boolean;
 	ftps?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.mms = opts['mms'];
     this.ftp = opts['ftp'];
@@ -1316,9 +1426,11 @@ export class TGOOSEcapabilities extends TServiceWithMax {
 	fixedOffs?: boolean;
 	goose?: boolean;
 	rGOOSE?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.fixedOffs = opts['fixedOffs'];
     this.goose = opts['goose'];
@@ -1334,9 +1446,11 @@ export class TRedProt extends NodeID {
 	hsr?: boolean;
 	prp?: boolean;
 	rstp?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.hsr = opts['hsr'];
     this.prp = opts['prp'];
@@ -1353,9 +1467,11 @@ export class TTimeSyncProt extends TServiceYesNo {
 	iec61850_9_3?: boolean;
 	c37_238?: boolean;
 	other?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.sntp = opts['sntp'];
     this.iec61850_9_3 = opts['iec61850_9_3'];
@@ -1373,9 +1489,11 @@ export class TSMVsc extends TServiceWithMax {
 	deliveryConf?: boolean;
 	sv?: boolean;
 	rSV?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.delivery = opts['delivery'];
     this.deliveryConf = opts['deliveryConf'];
@@ -1391,9 +1509,11 @@ export class TSMVsc extends TServiceWithMax {
 export class TSupSubscription extends NodeID {
 	maxGo: number;
 	maxSv: number;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.maxGo = opts['maxGo'];
     this.maxSv = opts['maxSv'];
@@ -1406,9 +1526,11 @@ export class TSupSubscription extends NodeID {
 //  TCommProt ...
 export class TCommProt extends TServiceYesNo {
 	ipv6?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.ipv6 = opts['ipv6'];
 
@@ -1421,9 +1543,11 @@ export class TCommProt extends TServiceYesNo {
 export class TMcSecurity extends NodeID {
 	signature?: boolean;
 	encryption?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.signature = opts['signature'];
     this.encryption = opts['encryption'];
@@ -1437,9 +1561,11 @@ export class TMcSecurity extends NodeID {
 export class TKDC extends NodeID {
 	iedName: TIEDName;
 	apName: TAccessPointName;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.iedName = opts['iedName'];
     this.apName = opts['apName'];
@@ -1452,9 +1578,11 @@ export class TKDC extends NodeID {
 //  SGEdit ...
 export class SGEdit extends TServiceYesNo {
 	resvTms?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.resvTms = opts['resvTms'];
 
@@ -1466,9 +1594,11 @@ export class SGEdit extends TServiceYesNo {
 //  ConfSG ...
 export class ConfSG extends TServiceYesNo {
 	resvTms?: boolean;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
       this.resvTms = opts['resvTms'];
 
@@ -1481,23 +1611,27 @@ export class ConfSG extends TServiceYesNo {
 export class TSettingGroups extends NodeID {
 	SGEdit?: SGEdit;
 	ConfSG?: ConfSG;
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
-        this.SGEdit = opts['SGEdit'];
-    this.ConfSG = opts['ConfSG'];
+     this.SGEdit = new SGEdit(opts['SGEdit']); 
+ this.ConfSG = new ConfSG(opts['ConfSG']); 
 
   }}
 
 // ComplexType 
 //  LN0 ...
 export class LN0 extends TLN0 {
+
   constructor(...args: any[]) {
     super(...args);
-      const opts = args[0];
+    const opts = args[0];
+    
     // Attributes
   
     // Elements
