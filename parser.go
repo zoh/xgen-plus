@@ -17,9 +17,15 @@ import (
 	"reflect"
 	"strings"
 
-	"golang.org/x/net/html/charset"
-
 	"github.com/sirupsen/logrus"
+	"golang.org/x/net/html/charset"
+)
+
+type Lang string
+
+const (
+	TypeScriptLang Lang = "TypeScript"
+	Golang         Lang = "Go"
 )
 
 // Options holds user-defined overrides and runtime data that are used when
@@ -30,7 +36,7 @@ type Options struct {
 	InputDir            string
 	OutputDir           string
 	Extract             bool
-	Lang                string
+	Lang                Lang
 	Package             string
 	IncludeMap          map[string]bool
 	LocalNameNSMap      map[string]string
@@ -59,9 +65,14 @@ type Options struct {
 
 	// for elements inside <xs:choice >... </xs:choice>
 	OutChoice *Choice
+
+	TypeScriptOptions struct {
+		// add "declare" to all classes
+		//DeclareClass bool
+	}
 }
 
-func NewOptions(filePath, xsdSrcDir, codeDir string, lang string) *Options {
+func NewOptions(filePath, xsdSrcDir, codeDir string, lang Lang) *Options {
 	return &Options{
 		FilePath:            filePath,
 		InputDir:            xsdSrcDir,
@@ -173,12 +184,13 @@ func (opt *Options) createCodeGenerator() error {
 		return err
 	}
 	opt.CodeGenerator = &CodeGenerator{
-		Lang:      opt.Lang,
-		Package:   opt.Package,
-		File:      strings.ReplaceAll(path, ".xsd", ""),
-		ProtoTree: opt.ProtoTree,
-		StructAST: map[string]string{},
-		Imports:   map[string]struct{}{},
+		Lang:            string(opt.Lang),
+		Package:         opt.Package,
+		File:            strings.ReplaceAll(path, ".xsd", ""),
+		ProtoTree:       opt.ProtoTree,
+		StructAST:       map[string]string{},
+		Imports:         map[string]struct{}{},
+		StructFieldName: map[string]struct{}{},
 
 		log:       logrus.New(),
 		JsonTag:   true,
@@ -186,12 +198,14 @@ func (opt *Options) createCodeGenerator() error {
 
 		OutputDir:    filepath.Dir(path),
 		BaseTypeFile: true,
+
+		opts: opt,
 	}
 	return nil
 }
 
 func (opt *Options) Gen() error {
-	funcName := fmt.Sprintf("Gen%s", MakeFirstUpperCase(opt.Lang))
+	funcName := fmt.Sprintf("Gen%s", MakeFirstUpperCase(string(opt.Lang)))
 	if err := callFuncByName(opt.CodeGenerator, funcName, []reflect.Value{}); err != nil {
 		log.Printf("Error %v", err)
 		return err
@@ -202,7 +216,7 @@ func (opt *Options) Gen() error {
 // GetValueType convert XSD schema value type to the build-in type for the
 // given value and proto tree.
 func (opt *Options) GetValueType(value string, XSDSchema []interface{}) (valueType string, err error) {
-	if buildType, ok := getBuildInTypeByLang(trimNSPrefix(value), opt.Lang); ok {
+	if buildType, ok := getBuildInTypeByLang(trimNSPrefix(value), string(opt.Lang)); ok {
 		valueType = buildType
 		return
 	}

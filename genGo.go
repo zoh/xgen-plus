@@ -33,6 +33,8 @@ type CodeGenerator struct {
 	ProtoTree []interface{}
 	StructAST map[string]string
 
+	StructFieldName map[string]struct{}
+
 	log *logrus.Logger
 
 	JsonTag bool
@@ -41,6 +43,17 @@ type CodeGenerator struct {
 
 	// если задан то генерируем файл с базовыми типами
 	BaseTypeFile bool
+
+	opts *Options
+}
+
+func (gen *CodeGenerator) setImports(values ...string) {
+	for _, v := range values {
+		fmt.Println("setImports: ", v, isSimpleType(v, gen.Lang))
+		if false == isSimpleType(v, gen.Lang) {
+			gen.Imports[v] = struct{}{}
+		}
+	}
 }
 
 var goBuildinType = map[string]bool{
@@ -296,6 +309,10 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 			} else {
 				// добавляем только NodeID
 				content += "\tNodeID\n"
+
+				if genGoFieldName(v.Name) == "TAnyContentFromOtherNamespace" {
+					content += fmt.Sprintf("Content *string\t`xml:\",chardata\" json:\",omitempty\"` \n")
+				}
 			}
 		}
 
@@ -320,6 +337,7 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 			content += fmt.Sprintf("\t%s\t// AttributeGroup\n", genGoFieldType(fieldType))
 		}
 
+		var attrDefaultVariables = ""
 		for _, attribute := range v.Attributes {
 			vv := attribute.Type // getBasefromSimpleType(trimNSPrefix(attribute.Type), gen.ProtoTree)
 
@@ -346,8 +364,17 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 				jsonTag = fmt.Sprintf(` json:"%s%s"`, attribute.Name, optional)
 			}
 
-			content += fmt.Sprintf("\t%sAttr\t%s\t`xml:\"%s,attr%s\"%s`\n",
-				genGoFieldName(attribute.Name), fieldType, attribute.Name, optional, jsonTag)
+			var defaultTag string
+			if attribute.Default != nil {
+				attrDefaultVariables += fmt.Sprintf("\t%s%sAttrDefault = %q\n",
+					fieldName, genGoFieldName(attribute.Name), *attribute.Default)
+
+				defaultTag = fmt.Sprintf(" default:%q", *attribute.Default)
+			}
+
+			content += fmt.Sprintf("\t%sAttr\t%s\t`xml:\"%s,attr%s\"%s%s`\n",
+				genGoFieldName(attribute.Name), fieldType, attribute.Name, optional, jsonTag, defaultTag)
+
 		}
 		for _, group := range v.Groups {
 			var plural string
@@ -388,6 +415,10 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 		content += "}\n"
 		gen.StructAST[v.Name] = content
 		gen.Field += fmt.Sprintf("%stype %s%s", genFieldComment(fieldName, v.Doc, "//"), fieldName, gen.StructAST[v.Name])
+
+		if attrDefaultVariables != "" {
+			gen.Field += "\nvar (\n" + attrDefaultVariables + "\n)"
+		}
 	}
 
 	if gen.Validator {
@@ -444,6 +475,7 @@ func (gen *CodeGenerator) GoAttributeGroup(v *AttributeGroup) {
 			content += fmt.Sprintf("%s\n", genGoFieldName(g.Name))
 		}
 
+		var attrDefaultVariables = ""
 		for _, attribute := range v.Attributes {
 			var optional string
 			if attribute.Optional {
@@ -461,16 +493,31 @@ func (gen *CodeGenerator) GoAttributeGroup(v *AttributeGroup) {
 				fType = "*" + fType
 			}
 
-			content += fmt.Sprintf("\t%sAttr\t%s\t`xml:\"%s,attr%s\"%s`\n",
+			var defaultTag string
+			if attribute.Default != nil {
+				attrDefaultVariables += fmt.Sprintf("\t%s%sAttrDefault = %q\n",
+					fieldName, genGoFieldName(attribute.Name), *attribute.Default)
+
+				defaultTag = fmt.Sprintf(" default:%q", *attribute.Default)
+			}
+
+			content += fmt.Sprintf("\t%sAttr\t%s\t`xml:\"%s,attr%s\"%s%s`\n",
 				genGoFieldName(attribute.Name),
 				fType,
 				attribute.Name,
 				optional,
-				jsonTag)
+				jsonTag,
+				defaultTag,
+			)
+
 		}
 		content += "}\n"
 		gen.StructAST[v.Name] = content
 		gen.Field += fmt.Sprintf("%stype %s%s", genFieldComment(fieldName, v.Doc, "//"), fieldName, gen.StructAST[v.Name])
+
+		if attrDefaultVariables != "" {
+			gen.Field += "\nvar (\n" + attrDefaultVariables + "\n)"
+		}
 
 		if gen.Validator {
 			gen.GoAttributeGroupValidation(v)

@@ -60,7 +60,7 @@ type Attribute struct {
 	Doc      string
 	Type     string
 	Plural   bool
-	Default  string
+	Default  *string
 	Optional bool
 
 	// {value constraint}
@@ -128,7 +128,6 @@ type AttributeGroup struct {
 	Attributes []*Attribute
 
 	AttributeGroup []*AttributeGroup
-	//todo: Attribute group ??
 
 	insideAttrGroup bool
 }

@@ -1,11 +1,3 @@
-// Copyright 2020 - 2021 The xgen Authors. All rights reserved. Use of this
-// source code is governed by a BSD-style license that can be found in the
-// LICENSE file.
-//
-// Package xgen written in pure Go providing a set of functions that allow you
-// to parse XSD (XML schema files). This library needs Go version 1.10 or
-// later.
-
 package xgen
 
 import (
@@ -13,6 +5,9 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"log"
 	"path"
 	"strings"
@@ -29,7 +24,7 @@ func TestParse_Case1(t *testing.T) {
 	assert.NoError(t, err)
 
 	err = readFile("test/xsd/interations/case1/case1.go", func(v string, fileName string, line int) error {
-		if strings.Contains(v, "XsNormalizedString") {
+		if strings.Contains(v, "XsNormalizedString") && strings.Contains(v, "// XsNormalizedString") == false {
 			return errors.New("XsNormalizedString invalid XsNormalizedString generated")
 		}
 		return nil
@@ -107,11 +102,12 @@ func TestParse_Case3(t *testing.T) {
 func TestParse_Case4(t *testing.T) {
 	testLogger.Info("Проверка на Union Types")
 	file := "test/xsd/interations/case4/case4_union.xsd"
-	parser := NewParser(NewOptions(file, xsdSrcDir, xsdSrcDir, "Go"))
-	err := parser.Parse()
+	parserXgen := NewParser(NewOptions(file, xsdSrcDir, xsdSrcDir, "Go"))
+	err := parserXgen.Parse()
 	assert.NoError(t, err, file)
 
-	fValue, err := readFileAll("test/xsd/interations/case4/case4_union.go")
+	fileName := "test/xsd/interations/case4/case4_union.go"
+	fValue, err := readFileAll(fileName)
 	require.NoError(t, err)
 	lines := strings.Split(fValue, "\n")
 
@@ -134,7 +130,7 @@ func TestParse_Case4(t *testing.T) {
 		"^Non[0-9A-Za-df-z_]$",
 	}
 
-	for _, pt := range parser.ProtoTree {
+	for _, pt := range parserXgen.ProtoTree {
 		st, ok := pt.(*SimpleType)
 		if ok && st.Name == "tIEDName" {
 			if !contains(p, st.Restriction.Pattern) {
@@ -154,13 +150,89 @@ func TestParse_Case4(t *testing.T) {
 			}
 		}
 	}
+
+	t.Run("check default param from <attribute", func(t *testing.T) {
+		for _, pt := range parserXgen.ProtoTree {
+			ct, ok := pt.(*ComplexType)
+			if ok && ct.Name == "ComplexType1" {
+				for _, attr := range ct.Attributes {
+					if attr.Name == "type2" {
+						require.NotNil(t, attr.Default)
+						assert.Equal(t, *attr.Default, "NonA")
+					}
+				}
+			}
+		}
+
+		fset := token.NewFileSet()
+		node, err := parser.ParseFile(fset, fileName, nil, parser.ParseComments)
+		if err != nil {
+			panic(err)
+		}
+
+		var cases = []struct {
+			name  string
+			value string
+			found bool
+		}{
+			{
+				name:  "ComplexType1Type2AttrDefault",
+				value: `NonA`,
+			},
+			{
+				"ComplexType1Type3AttrDefault", "false", false,
+			},
+			{
+				"ComplexType1XferNumberAttrDefault", "30", false,
+			},
+		}
+
+		for _, f := range node.Decls {
+			genD, ok := f.(*ast.GenDecl)
+			if !ok {
+				continue
+			}
+			for _, spec := range genD.Specs {
+				currType, ok := spec.(*ast.ValueSpec)
+				if !ok {
+					continue
+				}
+
+				if len(currType.Values) > 1 {
+					panic("sow many values")
+				}
+
+				switch v := currType.Values[0].(type) {
+				case *ast.BasicLit:
+					for i, c := range cases {
+						if c.name == currType.Names[0].String() && fmt.Sprintf("%q", c.value) == v.Value {
+							cases[i].found = true
+						}
+					}
+				case *ast.Ident:
+					for i, c := range cases {
+						if c.name == currType.Names[0].String() && fmt.Sprintf("%q", c.value) == v.String() {
+							cases[i].found = true
+						}
+					}
+				}
+			}
+		}
+
+		// check cases
+		for _, c := range cases {
+			if !c.found {
+				t.Errorf("not found %s with value %s", c.name, c.value)
+			}
+		}
+	})
 }
 
 func TestParse_Case5(t *testing.T) {
 	testLogger.Info("Проверка на Union Types")
 	file := "test/xsd/interations/case5/case5_any.xsd"
-	parser := NewParser(NewOptions(file, xsdSrcDir, xsdSrcDir, "Go"))
-	err := parser.Parse()
+	parserXgen := NewParser(NewOptions(file, xsdSrcDir, xsdSrcDir, "Go"))
+	err := parserXgen.Parse()
 	assert.NoError(t, err, file)
 
 	fValue, err := readFileAll("test/xsd/interations/case5/case5_any.go")

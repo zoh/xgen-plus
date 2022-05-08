@@ -49,6 +49,14 @@ func (opt *Options) OnAttribute(ele xml.StartElement, protoTree []interface{}) (
 			attribute.Fixed = attr.Value
 		}
 	}
+
+	for _, attr := range ele.Attr {
+		if attr.Name.Local == "default" && attribute.Optional {
+			val := attr.Value
+			attribute.Default = &val
+		}
+	}
+
 	if opt.ComplexType.Len() > 0 {
 		opt.ComplexType.Peek().(*ComplexType).Attributes = append(opt.ComplexType.Peek().(*ComplexType).Attributes, attribute)
 		return

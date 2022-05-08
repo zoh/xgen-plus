@@ -42,7 +42,10 @@
         <xs:simpleContent>
             <xs:extension base="tIEDNameOrNone">
                 <xs:attribute name="type" type="tAnyName" use="required"/>
-                <xs:attribute name="type2" type="tIEDNameOrNone" use="optional" default=""/>
+                <xs:attribute name="type2" type="tIEDNameOrNone" use="optional" default="NonA"/>
+                <xs:attribute name="type3" type="xs:boolean" use="optional" default="false"/>
+
+                <xs:attribute name="xferNumber" type="xs:unsignedInt" use="optional" default="30"/>
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>

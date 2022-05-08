@@ -1,7 +1,10 @@
 package schema
 
 import (
+	"encoding/json"
 	"encoding/xml"
+	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"strconv"
 	"strings"
@@ -111,4 +114,48 @@ func CheckValidate(v interface{}) error {
 		return fn.Validate()
 	}
 	return nil
+}
+
+type UnionContent struct {
+	Content string `xml:",chardata" json:",omitempty"`
+}
+
+func (u UnionContent) MarshalJSON() ([]byte, error) {
+	return []byte("\"" + u.Content + "\""), nil
+}
+
+func (u *UnionContent) UnmarshalJSON(v []byte) error {
+	if len(v) > 0 {
+		u.Content = strings.Trim(string(v), "\"")
+	}
+	return nil
+}
+
+func (u UnionContent) String() string {
+	return u.Content
+}
+
+var (
+	_ json.Unmarshaler = (*UnionContent)(nil)
+	_ json.Marshaler   = (*UnionContent)(nil)
+	_ fmt.Stringer     = (*UnionContent)(nil)
+)
+
+// "ComplexType"
+// UnitSlice - хак чтобы побороть []uint32
+type UnitSlice struct {
+	NodeID
+	Content string `xml:",chardata" json:",omitempty"`
+}
+
+func (t *UnitSlice) CreateElement(xmlTag string, level, pos uint, parentEl *Element) (*Element, error) {
+	if xmlTag == "" {
+		return nil, errors.New("UnitSlice.CreateElement empty tag ")
+	}
+	el := NewElement(xmlTag, level, pos, parentEl)
+	if t.NodeID.NodeID != nil {
+		el.ID = *t.NodeID.NodeID
+	}
+	el.Content = t.Content
+	return el, nil
 }

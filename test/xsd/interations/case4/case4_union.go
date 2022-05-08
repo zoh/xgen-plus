@@ -12,7 +12,19 @@ import (
 // TAcsiName ...
 type TAcsiName string
 
+func (t *TAcsiName) String() string {
+	if t == nil {
+		return ""
+	}
+	return string(*t)
+}
+
+// Validate ...
 func (t *TAcsiName) Validate() error {
+	if t == nil {
+		return nil
+	}
+	// XsName
 	var checkPattern bool
 	for _, p := range []string{`^[A-Za-z][0-9A-Za-z_]*$`} {
 		if ok, err := regexp.MatchString(p, string(*t)); err != nil {
@@ -36,7 +48,23 @@ func (t *TAcsiName) Validate() error {
 // TIEDNameIsNone ...
 type TIEDNameIsNone string
 
+func (t *TIEDNameIsNone) String() string {
+	if t == nil {
+		return ""
+	}
+	return string(*t)
+}
+
+// Validate ...
 func (t *TIEDNameIsNone) Validate() error {
+	if t == nil {
+		return nil
+	}
+	// TAcsiName
+	vv := TAcsiName(*t)
+	if err := vv.Validate(); err != nil {
+		return err
+	}
 	var checkPattern bool
 	for _, p := range []string{`^None$`} {
 		if ok, err := regexp.MatchString(p, string(*t)); err != nil {
@@ -59,7 +87,6 @@ func (t *TIEDNameIsNone) Validate() error {
 // TIEDNameOrNone is  UNION type
 type TIEDNameOrNone struct {
 	UnionContent
-	//Content        string `xml:",chardata" json:",omitempty"`
 	tIEDNameIsNone *TIEDNameIsNone
 	tIEDName       *TIEDName
 }
@@ -76,7 +103,11 @@ func (t *TIEDNameOrNone) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 	}, nil
 }
 
+// Validate ...
 func (t *TIEDNameOrNone) Validate() error {
+	if t == nil {
+		return nil
+	}
 	{
 		p := TIEDName(t.Content)
 		t.tIEDName = &p
@@ -106,7 +137,23 @@ UnionLabel:
 // TIEDName ...
 type TIEDName string
 
+func (t *TIEDName) String() string {
+	if t == nil {
+		return ""
+	}
+	return string(*t)
+}
+
+// Validate ...
 func (t *TIEDName) Validate() error {
+	if t == nil {
+		return nil
+	}
+	// TAcsiName
+	vv := TAcsiName(*t)
+	if err := vv.Validate(); err != nil {
+		return err
+	}
 	var checkPattern bool
 	for _, p := range []string{`^[A-Za-z][0-9A-Za-z_]{0,2}$`, `^[A-Za-z][0-9A-Za-z_]{4,63}$`, `^[A-MO-Za-z][0-9A-Za-z_]{3}$`, `^N[0-9A-Za-np-z_][0-9A-Za-z_]{2}$`, `^No[0-9A-Za-mo-z_][0-9A-Za-z_]$`, `^Non[0-9A-Za-df-z_]$`} {
 		if ok, err := regexp.MatchString(p, string(*t)); err != nil {
@@ -136,7 +183,19 @@ func (t *TIEDName) Validate() error {
 // TAnyName ...
 type TAnyName string
 
+func (t *TAnyName) String() string {
+	if t == nil {
+		return ""
+	}
+	return string(*t)
+}
+
+// Validate ...
 func (t *TAnyName) Validate() error {
+	if t == nil {
+		return nil
+	}
+	// XsNormalizedString
 
 	return nil
 }
@@ -145,14 +204,28 @@ func (t *TAnyName) Validate() error {
 // ComplexType1 ...
 type ComplexType1 struct {
 	NodeID
-	*TIEDNameOrNone `xml:",chardata" json:",omitempty"`
-	TypeAttr        TAnyName        `xml:"type,attr" json:"type"`
-	Type2Attr       *TIEDNameOrNone `xml:"type2,attr,omitempty" json:"type2,omitempty"`
+	Content        *TIEDNameOrNone `xml:",chardata" json:",omitempty"`
+	TypeAttr       TAnyName        `xml:"type,attr" json:"type"`
+	Type2Attr      *TIEDNameOrNone `xml:"type2,attr,omitempty" json:"type2,omitempty"`
+	Type3Attr      *bool           `xml:"type3,attr,omitempty" json:"type3,omitempty"`
+	XferNumberAttr *uint32         `xml:"xferNumber,attr,omitempty" json:"xferNumber,omitempty"`
 }
 
+var (
+	ComplexType1Type2AttrDefault      = "NonA"
+	ComplexType1Type3AttrDefault      = "false"
+	ComplexType1XferNumberAttrDefault = "30"
+)
+
+// Validate ...
 func (t *ComplexType1) Validate() error {
-	if err := t.TIEDNameOrNone.Validate(); err != nil {
-		return err
+	if t == nil {
+		return nil
+	}
+	if t.Content != nil {
+		if err := t.Content.Validate(); err != nil {
+			return err
+		}
 	}
 	// AttributeGroup
 
@@ -181,7 +254,11 @@ type SCL struct {
 	ComplexType1 []ComplexType1 `xml:"ComplexType1" json:"ComplexType1"`
 }
 
+// Validate ...
 func (t *SCL) Validate() error {
+	if t == nil {
+		return nil
+	}
 	if err := t.TBaseElement.Validate(); err != nil {
 		return err
 	}
@@ -204,12 +281,16 @@ func (t *SCL) Validate() error {
 // TBaseElement ...
 type TBaseElement struct {
 	NodeID
-	AdditionalFields AdditionalFieldsType `xml:",any,attr"`
-	CustomElements   []AnyHolder          `xml:",any"`
-	Text             *string              `xml:"Text" json:"Text"`
+	AdditionalFields AdditionalFieldsType `xml:",any,attr" json:"-"`
+	CustomElements   []AnyHolder          `xml:",any" json:"-"`
+	Text             *string              `xml:"Text" json:"Text,omitempty"`
 }
 
+// Validate ...
 func (t *TBaseElement) Validate() error {
+	if t == nil {
+		return nil
+	}
 	// AttributeGroup
 
 	// Attributes

@@ -238,87 +238,6 @@
 		<xs:attribute name="kind" type="tAssociationKindEnum" use="required"/>
 		<xs:attribute name="associationID" type="tAssociationID" use="optional"/>
 	</xs:complexType>
-	<xs:element name="LN0">
-		<xs:complexType>
-			<xs:complexContent>
-				<xs:extension base="tLN0"/>
-			</xs:complexContent>
-		</xs:complexType>
-		<xs:unique name="uniqueReportControlInLN0">
-			<xs:selector xpath="./scl:ReportControl"/>
-			<xs:field xpath="@name"/>
-		</xs:unique>
-		<xs:unique name="uniqueLogControlInLN0">
-			<xs:selector xpath="./scl:LogControl"/>
-			<xs:field xpath="@name"/>
-		</xs:unique>
-		<xs:unique name="uniqueGSEControlInLN0">
-			<xs:selector xpath="./scl:GSEControl"/>
-			<xs:field xpath="@name"/>
-		</xs:unique>
-		<xs:unique name="uniqueSampledValueControlInLN0">
-			<xs:selector xpath="./scl:SampledValueControl"/>
-			<xs:field xpath="@name"/>
-		</xs:unique>
-		<xs:key name="DataSetKeyLN0">
-			<xs:selector xpath="./scl:DataSet"/>
-			<xs:field xpath="@name"/>
-		</xs:key>
-		<xs:keyref name="ref2DataSetReportLN0" refer="DataSetKeyLN0">
-			<xs:selector xpath="./scl:ReportControl"/>
-			<xs:field xpath="@datSet"/>
-		</xs:keyref>
-		<xs:keyref name="ref2DataSetLogLN0" refer="DataSetKeyLN0">
-			<xs:selector xpath="./scl:LogControl"/>
-			<xs:field xpath="@datSet"/>
-		</xs:keyref>
-		<xs:keyref name="ref2DataSetGSELN0" refer="DataSetKeyLN0">
-			<xs:selector xpath="./scl:GSEControl"/>
-			<xs:field xpath="@datSet"/>
-		</xs:keyref>
-		<xs:keyref name="ref2DataSetSVLN0" refer="DataSetKeyLN0">
-			<xs:selector xpath="./scl:SampledValueControl"/>
-			<xs:field xpath="@datSet"/>
-		</xs:keyref>
-		<xs:unique name="uniqueDOIinLN0">
-			<xs:selector xpath="./scl:DOI"/>
-			<xs:field xpath="@name"/>
-		</xs:unique>
-		<xs:unique name="uniqueLogInLN0">
-			<xs:selector xpath="./scl:Log"/>
-			<xs:field xpath="@name"/>
-		</xs:unique>
-	</xs:element>
-	<xs:element name="LN" type="tLN">
-		<xs:unique name="uniqueReportControlInLN">
-			<xs:selector xpath="./scl:ReportControl"/>
-			<xs:field xpath="@name"/>
-		</xs:unique>
-		<xs:unique name="uniqueLogControlInLN">
-			<xs:selector xpath="./scl:LogControl"/>
-			<xs:field xpath="@name"/>
-		</xs:unique>
-		<xs:key name="DataSetKeyInLN">
-			<xs:selector xpath="./scl:DataSet"/>
-			<xs:field xpath="@name"/>
-		</xs:key>
-		<xs:keyref name="ref2DataSetReport" refer="DataSetKeyInLN">
-			<xs:selector xpath="./scl:ReportControl"/>
-			<xs:field xpath="@datSet"/>
-		</xs:keyref>
-		<xs:keyref name="ref2DataSetLog" refer="DataSetKeyInLN">
-			<xs:selector xpath="./scl:LogControl"/>
-			<xs:field xpath="@datSet"/>
-		</xs:keyref>
-		<xs:unique name="uniqueDOIinLN">
-			<xs:selector xpath="./scl:DOI"/>
-			<xs:field xpath="@name"/>
-		</xs:unique>
-		<xs:unique name="uniqueLogInLN">
-			<xs:selector xpath="./scl:Log"/>
-			<xs:field xpath="@name"/>
-		</xs:unique>
-	</xs:element>
 	<xs:complexType name="tAnyLN" abstract="true">
 		<xs:complexContent>
 			<xs:extension base="tUnNaming">
@@ -924,5 +843,86 @@
 			<xs:selector xpath="./scl:AccessPoint/scl:ServerAt"/>
 			<xs:field xpath="@apName"/>
 		</xs:keyref>
+	</xs:element>
+	<xs:element name="LN0">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="tLN0"/>
+			</xs:complexContent>
+		</xs:complexType>
+		<xs:unique name="uniqueReportControlInLN0">
+			<xs:selector xpath="./scl:ReportControl"/>
+			<xs:field xpath="@name"/>
+		</xs:unique>
+		<xs:unique name="uniqueLogControlInLN0">
+			<xs:selector xpath="./scl:LogControl"/>
+			<xs:field xpath="@name"/>
+		</xs:unique>
+		<xs:unique name="uniqueGSEControlInLN0">
+			<xs:selector xpath="./scl:GSEControl"/>
+			<xs:field xpath="@name"/>
+		</xs:unique>
+		<xs:unique name="uniqueSampledValueControlInLN0">
+			<xs:selector xpath="./scl:SampledValueControl"/>
+			<xs:field xpath="@name"/>
+		</xs:unique>
+		<xs:key name="DataSetKeyLN0">
+			<xs:selector xpath="./scl:DataSet"/>
+			<xs:field xpath="@name"/>
+		</xs:key>
+		<xs:keyref name="ref2DataSetReportLN0" refer="DataSetKeyLN0">
+			<xs:selector xpath="./scl:ReportControl"/>
+			<xs:field xpath="@datSet"/>
+		</xs:keyref>
+		<xs:keyref name="ref2DataSetLogLN0" refer="DataSetKeyLN0">
+			<xs:selector xpath="./scl:LogControl"/>
+			<xs:field xpath="@datSet"/>
+		</xs:keyref>
+		<xs:keyref name="ref2DataSetGSELN0" refer="DataSetKeyLN0">
+			<xs:selector xpath="./scl:GSEControl"/>
+			<xs:field xpath="@datSet"/>
+		</xs:keyref>
+		<xs:keyref name="ref2DataSetSVLN0" refer="DataSetKeyLN0">
+			<xs:selector xpath="./scl:SampledValueControl"/>
+			<xs:field xpath="@datSet"/>
+		</xs:keyref>
+		<xs:unique name="uniqueDOIinLN0">
+			<xs:selector xpath="./scl:DOI"/>
+			<xs:field xpath="@name"/>
+		</xs:unique>
+		<xs:unique name="uniqueLogInLN0">
+			<xs:selector xpath="./scl:Log"/>
+			<xs:field xpath="@name"/>
+		</xs:unique>
+	</xs:element>
+	<xs:element name="LN" type="tLN">
+		<xs:unique name="uniqueReportControlInLN">
+			<xs:selector xpath="./scl:ReportControl"/>
+			<xs:field xpath="@name"/>
+		</xs:unique>
+		<xs:unique name="uniqueLogControlInLN">
+			<xs:selector xpath="./scl:LogControl"/>
+			<xs:field xpath="@name"/>
+		</xs:unique>
+		<xs:key name="DataSetKeyInLN">
+			<xs:selector xpath="./scl:DataSet"/>
+			<xs:field xpath="@name"/>
+		</xs:key>
+		<xs:keyref name="ref2DataSetReport" refer="DataSetKeyInLN">
+			<xs:selector xpath="./scl:ReportControl"/>
+			<xs:field xpath="@datSet"/>
+		</xs:keyref>
+		<xs:keyref name="ref2DataSetLog" refer="DataSetKeyInLN">
+			<xs:selector xpath="./scl:LogControl"/>
+			<xs:field xpath="@datSet"/>
+		</xs:keyref>
+		<xs:unique name="uniqueDOIinLN">
+			<xs:selector xpath="./scl:DOI"/>
+			<xs:field xpath="@name"/>
+		</xs:unique>
+		<xs:unique name="uniqueLogInLN">
+			<xs:selector xpath="./scl:Log"/>
+			<xs:field xpath="@name"/>
+		</xs:unique>
 	</xs:element>
 </xs:schema>

@@ -12,7 +12,18 @@ import (
 // TAcsiName ...
 type TAcsiName string
 
+func (t *TAcsiName) String() string {
+	if t == nil {
+		return ""
+	}
+	return string(*t)
+}
+
 func (t *TAcsiName) Validate() error {
+	if t == nil {
+		return nil
+	}
+	// XsName
 	var checkPattern bool
 	for _, p := range []string{`^[A-Za-z][0-9A-Za-z_]*$`} {
 		if ok, err := regexp.MatchString(p, string(*t)); err != nil {
@@ -36,7 +47,22 @@ func (t *TAcsiName) Validate() error {
 // TIEDName ...
 type TIEDName string
 
+func (t *TIEDName) String() string {
+	if t == nil {
+		return ""
+	}
+	return string(*t)
+}
+
 func (t *TIEDName) Validate() error {
+	if t == nil {
+		return nil
+	}
+	// TAcsiName
+	vv := TAcsiName(*t)
+	if err := vv.Validate(); err != nil {
+		return err
+	}
 	var checkPattern bool
 	for _, p := range []string{`^[A-Za-z][0-9A-Za-z_]{0,2}$`, `^[A-Za-z][0-9A-Za-z_]{4,63}$`, `^[A-MO-Za-z][0-9A-Za-z_]{3}$`, `^N[0-9A-Za-np-z_][0-9A-Za-z_]{2}$`, `^No[0-9A-Za-mo-z_][0-9A-Za-z_]$`, `^Non[0-9A-Za-df-z_]$`} {
 		if ok, err := regexp.MatchString(p, string(*t)); err != nil {
@@ -66,7 +92,22 @@ func (t *TIEDName) Validate() error {
 // TIEDNameIsNone ...
 type TIEDNameIsNone string
 
+func (t *TIEDNameIsNone) String() string {
+	if t == nil {
+		return ""
+	}
+	return string(*t)
+}
+
 func (t *TIEDNameIsNone) Validate() error {
+	if t == nil {
+		return nil
+	}
+	// TAcsiName
+	vv := TAcsiName(*t)
+	if err := vv.Validate(); err != nil {
+		return err
+	}
 	var checkPattern bool
 	for _, p := range []string{`^None$`} {
 		if ok, err := regexp.MatchString(p, string(*t)); err != nil {
@@ -88,9 +129,9 @@ func (t *TIEDNameIsNone) Validate() error {
 // "SimpleType"
 // TIEDNameOrNone is  UNION type
 type TIEDNameOrNone struct {
-	Content        string `xml:",chardata" json:",omitempty"`
-	tIEDNameIsNone *TIEDNameIsNone
+	UnionContent
 	tIEDName       *TIEDName
+	tIEDNameIsNone *TIEDNameIsNone
 }
 
 func (t *TIEDNameOrNone) IsEmpty() bool { return t.Content == "" }
@@ -106,6 +147,9 @@ func (t *TIEDNameOrNone) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 }
 
 func (t *TIEDNameOrNone) Validate() error {
+	if t == nil {
+		return nil
+	}
 	{
 		p := TIEDName(t.Content)
 		t.tIEDName = &p
@@ -134,11 +178,14 @@ UnionLabel:
 // TAnyContentFromOtherNamespace ...
 type TAnyContentFromOtherNamespace struct {
 	NodeID
-	AdditionalFields AdditionalFieldsType `xml:",any,attr"`
-	CustomElements   []AnyHolder          `xml:",any"`
+	AdditionalFields AdditionalFieldsType `xml:",any,attr" json:"-"`
+	CustomElements   []AnyHolder          `xml:",any" json:"-"`
 }
 
 func (t *TAnyContentFromOtherNamespace) Validate() error {
+	if t == nil {
+		return nil
+	}
 	// AttributeGroup
 
 	// Attributes
@@ -154,7 +201,18 @@ func (t *TAnyContentFromOtherNamespace) Validate() error {
 // TPrivateTypeNormalizedString ...
 type TPrivateTypeNormalizedString string
 
+func (t *TPrivateTypeNormalizedString) String() string {
+	if t == nil {
+		return ""
+	}
+	return string(*t)
+}
+
 func (t *TPrivateTypeNormalizedString) Validate() error {
+	if t == nil {
+		return nil
+	}
+	// XsNormalizedString
 	if len(*t) < 1 {
 		return errors.New("меньше минимального 1 значение в TPrivateTypeNormalizedString")
 	}
@@ -173,6 +231,9 @@ type TPrivate struct {
 }
 
 func (t *TPrivate) Validate() error {
+	if t == nil {
+		return nil
+	}
 	if err := t.TAnyContentFromOtherNamespace.Validate(); err != nil {
 		return err
 	}
@@ -209,6 +270,9 @@ type TVal struct {
 }
 
 func (t *TVal) Validate() error {
+	if t == nil {
+		return nil
+	}
 	// Content type "string" skipped, is go-based// AttributeGroup
 
 	// Attributes
@@ -228,6 +292,9 @@ type TIDNaming struct {
 }
 
 func (t *TIDNaming) Validate() error {
+	if t == nil {
+		return nil
+	}
 	if err := t.TBaseElement.Validate(); err != nil {
 		return err
 	}
@@ -255,13 +322,16 @@ func (t *TIDNaming) Validate() error {
 // TBaseElement ...
 type TBaseElement struct {
 	NodeID
-	AdditionalFields AdditionalFieldsType `xml:",any,attr"`
-	CustomElements   []AnyHolder          `xml:",any"`
-	Text             *TText               `xml:"Text" json:"Text"`
-	Private          []TPrivate           `xml:"Private" json:"Private"`
+	AdditionalFields AdditionalFieldsType `xml:",any,attr" json:"-"`
+	CustomElements   []AnyHolder          `xml:",any" json:"-"`
+	Text             *TText               `xml:"Text" json:"Text,omitempty"`
+	Private          []TPrivate           `xml:"Private" json:"Private,omitempty"`
 }
 
 func (t *TBaseElement) Validate() error {
+	if t == nil {
+		return nil
+	}
 	// AttributeGroup
 
 	// Attributes
@@ -285,7 +355,18 @@ func (t *TBaseElement) Validate() error {
 // TID ...
 type TID string
 
+func (t *TID) String() string {
+	if t == nil {
+		return ""
+	}
+	return string(*t)
+}
+
 func (t *TID) Validate() error {
+	if t == nil {
+		return nil
+	}
+	// XsToken
 	var checkPattern bool
 	for _, p := range []string{`^\S+$`} {
 		if ok, err := regexp.MatchString(p, string(*t)); err != nil {
@@ -317,6 +398,9 @@ type AgDesc struct {
 }
 
 func (t *AgDesc) Validate() error {
+	if t == nil {
+		return nil
+	}
 
 	return nil
 }
@@ -329,6 +413,9 @@ type TText struct {
 }
 
 func (t *TText) Validate() error {
+	if t == nil {
+		return nil
+	}
 	if err := t.TAnyContentFromOtherNamespace.Validate(); err != nil {
 		return err
 	}

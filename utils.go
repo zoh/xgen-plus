@@ -214,16 +214,12 @@ func trimNSPrefix(str string) (name string) {
 
 // MakeFirstUpperCase make the first letter of a string uppercase.
 func MakeFirstUpperCase(s string) string {
-
 	if len(s) < 2 {
 		return strings.ToUpper(s)
 	}
-
 	bts := []byte(s)
-
 	lc := bytes.ToUpper([]byte{bts[0]})
 	rest := bts[1:]
-
 	return string(bytes.Join([][]byte{lc, rest}, nil))
 }
 

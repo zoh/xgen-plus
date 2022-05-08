@@ -87,8 +87,12 @@ if checkPattern == false { return errors.New("none were found match pattern: " +
 	// todo: max min ?
 
 	gen.Field += fmt.Sprintf(`
-func (t *%s) Validate() error { 
-	%s
+// Validate ...
+func (t *%[1]s) Validate() error { 
+	if t == nil {
+		return nil
+	}
+	%[2]s
 	return nil
 }
 `, fieldName, body)
@@ -217,7 +221,11 @@ func (gen *CodeGenerator) GoComplexTypeValidation(v *ComplexType) {
 	}
 
 	gen.Field += fmt.Sprintf(`
+// Validate ...
 func (t *%s) Validate() error { 
+	if t == nil {
+		return nil
+	}
 	%s
 	//todo: check "minOccurs" and "maxOccurs"
 	//	for example minOccurs=1,2 ... and maxOccurs=2
@@ -245,6 +253,9 @@ func (gen *CodeGenerator) GoAttributeGroupValidation(v *AttributeGroup) {
 
 	gen.Field += fmt.Sprintf(`
 func (t *%s) Validate() error { 
+	if t == nil {
+		return nil
+	}
 	%s
 	return nil
 }
