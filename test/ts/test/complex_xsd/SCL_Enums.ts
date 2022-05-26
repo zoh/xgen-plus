@@ -1,4 +1,4 @@
-import { UnsignedInt,TRestrName1stL } from "./BaseIndex"
+import { TRestrName1stL,UnsignedInt } from "./BaseIndex"
 
 
 // Simple type
@@ -485,21 +485,21 @@ export enum TDomainLNGroupZEnum {
 // Union type
 // TDomainLNEnum ...
 export type TDomainLNEnum =
+	|	TDomainLNGroupREnum
+	|	TDomainLNGroupCEnum
+	|	TDomainLNGroupFEnum
+	|	TDomainLNGroupKEnum
+	|	TDomainLNGroupQEnum
+	|	TDomainLNGroupYEnum
+	|	TDomainLNGroupGEnum
+	|	TDomainLNGroupIEnum
 	|	TDomainLNGroupTEnum
 	|	TDomainLNGroupXEnum
-	|	TDomainLNGroupCEnum
-	|	TDomainLNGroupIEnum
-	|	TDomainLNGroupSEnum
+	|	TDomainLNGroupMEnum
 	|	TDomainLNGroupZEnum
 	|	TDomainLNGroupAEnum
 	|	TDomainLNGroupPEnum
-	|	TDomainLNGroupYEnum
-	|	TDomainLNGroupMEnum
-	|	TDomainLNGroupQEnum
-	|	TDomainLNGroupREnum
-	|	TDomainLNGroupFEnum
-	|	TDomainLNGroupGEnum
-	|	TDomainLNGroupKEnum
+	|	TDomainLNGroupSEnum
 
 // Union type
 // TPredefinedLNClassEnum ...
@@ -514,8 +514,8 @@ export type TExtensionLNClassEnum = string;
 // Union type
 // TLNClassEnum ...
 export type TLNClassEnum =
-	|	TExtensionLNClassEnum
 	|	TPredefinedLNClassEnum
+	|	TExtensionLNClassEnum
 
 // Simple type
 // TPredefinedCDCEnum ...

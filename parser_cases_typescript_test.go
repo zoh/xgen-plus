@@ -49,6 +49,13 @@ func TestParse_TypeScriptSCLfile(t *testing.T) {
 	require.NoError(t, err, file)
 }
 
+func TestParse_TypeScriptSCL_IED(t *testing.T) {
+	file := "test/complex_xsd/SCL_IED.xsd"
+	parser := NewParser(NewOptions(file, xsdSrcDir, tsSrcDir, TypeScriptLang))
+	err := parser.Parse()
+	require.NoError(t, err, file)
+}
+
 func TestParse_TypeScriptSCLAll(t *testing.T) {
 	err := PrepareOutputDir(tsSrcDir)
 	assert.NoError(t, err)
@@ -61,6 +68,7 @@ func TestParse_TypeScriptSCLAll(t *testing.T) {
 	var parser *Options
 	for _, file := range files {
 		parser = NewParser(NewOptions(file, xsdSrcDir, tsSrcDir, TypeScriptLang))
+		parser.TypeScriptOptions.BaseIndexFileImport = "./BaseIndex"
 		err = parser.Parse()
 		require.NoError(t, err, file)
 

@@ -69,6 +69,7 @@ type Options struct {
 	TypeScriptOptions struct {
 		// add "declare" to all classes
 		//DeclareClass bool
+		BaseIndexFileImport string
 	}
 }
 

@@ -65,7 +65,6 @@ func (gen *CodeGenerator) GenTypeScript() error {
 			continue
 		}
 		funcName := fmt.Sprintf("TypeScript%s", reflect.TypeOf(ele).String()[6:])
-		fmt.Printf("%s, %T \r\n", funcName, ele)
 		if err := callFuncByName(gen, funcName, []reflect.Value{reflect.ValueOf(ele)}); err != nil {
 			log.Fatalln(err)
 		}
@@ -93,7 +92,10 @@ func (gen *CodeGenerator) GenTypeScript() error {
 				exports = append(exports, k)
 			}
 		}
-		f.WriteString(fmt.Sprintf("import { %s } from \"./BaseIndex\"\n", strings.Join(exports, ",")))
+		f.WriteString(fmt.Sprintf("import { %s } from %q\n",
+			strings.Join(exports, ","),
+			gen.opts.TypeScriptOptions.BaseIndexFileImport,
+		))
 	}
 	source := []byte(fmt.Sprintf("%s\n%s", copyright, gen.Field))
 	f.Write(source)
@@ -116,7 +118,14 @@ func genTypeScriptFieldName(name string) (fieldName string) {
 
 func genTypeScriptFieldType(name string, plural bool) (fieldType string) {
 	if _, ok := typeScriptBuildInType[name]; ok {
-		fieldType = name
+		if name == "number" {
+			fieldType = "Number"
+		} else {
+			fieldType = name
+		}
+		if plural {
+			fieldType = fmt.Sprintf("Array<%s>", fieldType)
+		}
 		return
 	}
 	for _, str := range strings.Split(name, ".") {
@@ -228,7 +237,11 @@ func (gen *CodeGenerator) TypeScriptComplexType(v *ComplexType) {
 				if types, ok := BuildInTypes[tt]; ok {
 					t := types[1]
 					gen.setImports(t)
-					contentCharData = fmt.Sprintf("Content: %s; \n", t)
+					contentCharData = fmt.Sprintf("Content!: %s; \n", t)
+
+					// забыл добавить NodeID
+					extends = append(extends, "NodeID")
+					gen.Imports["NodeID"] = struct{}{}
 				} else {
 					t := genTypeScriptFieldName(trimNSPrefix(v.EmbeddedStructName))
 					extends = append(extends, t)
@@ -267,11 +280,11 @@ func (gen *CodeGenerator) TypeScriptComplexType(v *ComplexType) {
 		content += contentCharData
 
 		for _, attribute := range v.Attributes {
-			var optional string
-			if attribute.Optional {
-				optional = "?"
-			}
-			var fieldType string
+			var (
+				optional   = "!"
+				fieldType  string
+				fixedValue = ""
+			)
 
 			vv := attribute.Type
 			if vv == "" && attribute.SimpleTypeInside != nil {
@@ -280,8 +293,23 @@ func (gen *CodeGenerator) TypeScriptComplexType(v *ComplexType) {
 				fieldType = genTypeScriptFieldType(getBasefromSimpleType(trimNSPrefix(attribute.Type), gen.ProtoTree), attribute.Plural)
 			}
 
+			if attribute.Optional {
+				optional = "?"
+			} else if attribute.Fixed != "" {
+				optional = ""
+				if strings.HasSuffix(fieldType, "Enum") {
+					fixedValue = fmt.Sprintf(" = %q as %s", attribute.Fixed, fieldType)
+				} else {
+					if fieldType == "boolean" {
+						fixedValue = fmt.Sprintf(" = %s", attribute.Fixed)
+					} else {
+						fixedValue = fmt.Sprintf(" = %q", attribute.Fixed)
+					}
+				}
+			}
+
 			gen.setImports(clearPlural(fieldType))
-			content += fmt.Sprintf("\t%s%s: %s;\n", attribute.Name, optional, fieldType)
+			content += fmt.Sprintf("\t%s%s: %s%s;\n", attribute.Name, optional, fieldType, fixedValue)
 		}
 		for _, group := range v.Groups {
 			content += fmt.Sprintf("\t%s: %s;\n",
@@ -301,7 +329,7 @@ func (gen *CodeGenerator) TypeScriptComplexType(v *ComplexType) {
 		}
 
 		//  generate constructor body.
-		t, err := template.New("TypeScriptComplexType").Parse(__TypeScriptComplexTypeConstructor)
+		t, err := template.New("TypeScriptComplexType").Parse(__TypeScriptComplexTypeConstructorMethods)
 		if err != nil {
 			log.Fatalln(err)
 		}

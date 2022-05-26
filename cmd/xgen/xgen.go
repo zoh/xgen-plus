@@ -38,7 +38,7 @@ type Config struct {
 	I       string
 	O       string
 	Pkg     string
-	Lang    string
+	Lang    xgen.Lang
 	Version string
 }
 
@@ -84,11 +84,11 @@ func parseFlags() *Config {
 		fmt.Println("must specify the language of generated code (Go/C/Java/Rust/TypeScript)")
 		os.Exit(1)
 	}
-	Cfg.Lang = *langPtr
+	Cfg.Lang = xgen.Lang(*langPtr)
 	if *oPtr != "" {
 		Cfg.O = *oPtr
 	}
-	if ok := SupportLang[Cfg.Lang]; !ok {
+	if ok := SupportLang[string(Cfg.Lang)]; !ok {
 		fmt.Println("unsupport language", Cfg.Lang)
 		os.Exit(1)
 	}

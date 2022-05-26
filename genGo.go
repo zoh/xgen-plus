@@ -49,7 +49,8 @@ type CodeGenerator struct {
 
 func (gen *CodeGenerator) setImports(values ...string) {
 	for _, v := range values {
-		if false == isSimpleType(v, gen.Lang) {
+		// todo
+		if false == isSimpleType(v, gen.Lang) && v != "Number" {
 			gen.Imports[v] = struct{}{}
 		}
 	}

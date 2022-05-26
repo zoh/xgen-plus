@@ -1,4 +1,4 @@
-import { Constructor,TIDNaming,AgDesc,TVal,TSDOCount,TUnNaming,TDataName,TName,TNamespaceName,TDACount,TValKindEnum,TAttributeNameEnum,TCDCEnum,TAnyName,TLNClassEnum,TSubDataName,TFCEnum,NodeID,TEnumStringValue,TBasicTypeEnum } from "./BaseIndex"
+import { Constructor,TBasicTypeEnum,TAnyName,TIDNaming,TUnNaming,TAttributeNameEnum,TValKindEnum,TVal,TSubDataName,TSDOCount,TNamespaceName,TDACount,TDataName,TName,TLNClassEnum,NodeID,TEnumStringValue,AgDesc,TCDCEnum,TFCEnum } from "./BaseIndex"
 
 
 // AgDATrgOp ...
@@ -15,6 +15,16 @@ export function AgDATrgOp<TBase extends Constructor>(Base: TBase) {
     if (args[0]?.hasOwnProperty("dupd")) this.dupd = args[0]['dupd'];
 
   }
+
+  Attributes() {
+    return [
+      ...super.Attributes(),
+       {name: "dchg",  fieldType: "boolean" },
+ {name: "qchg",  fieldType: "boolean" },
+ {name: "dupd",  fieldType: "boolean" },
+
+    ]
+  }
   };
 }
 // Simple type
@@ -27,9 +37,9 @@ export type DataTypeTemplatesElement = TDataTypeTemplates;
 // ComplexType 
 //  TAbstractDataAttribute ...
 export class TAbstractDataAttribute extends TUnNaming {
-	name: TAttributeNameEnum;
+	name!: TAttributeNameEnum;
 	sAddr?: string;
-	bType: TBasicTypeEnum;
+	bType!: TBasicTypeEnum;
 	valKind?: TValKindEnum;
 	type?: TAnyName;
 	count?: TDACount;
@@ -39,6 +49,7 @@ export class TAbstractDataAttribute extends TUnNaming {
   constructor(...args: any[]) {
     super(...args);
     const opts = args[0];
+    if (opts) {
     
     // Attributes
       this.name = opts['name'];
@@ -50,41 +61,88 @@ export class TAbstractDataAttribute extends TUnNaming {
     this.valImport = opts['valImport'];
 
     // Elements
-     this.Val = opts['Val']?.map(val => new TVal(val)); 
+     this.Val = opts['Val']?.map((val: any) => new TVal(val)); 
 
-  }}
+    }
+  }
+
+  Elements() {
+    return {
+      ...super.Elements(),
+      //...
+      "Val": { construct: TVal, plural: true },
+
+    }
+  }
+
+  Attributes() {
+    return [
+      ...super.Attributes(),
+       { name: 'name', required: true, fieldType: 'tAttributeNameEnum',  },
+ { name: 'sAddr',  fieldType: 'string',  },
+ { name: 'bType', required: true, fieldType: 'tBasicTypeEnum',  },
+ { name: 'valKind',  fieldType: 'tValKindEnum',  },
+ { name: 'type',  fieldType: 'tAnyName',  },
+ { name: 'count',  fieldType: 'tDACount',  },
+ { name: 'valImport',  fieldType: 'boolean',  },
+
+    ]
+  }
+}
 
 // ComplexType 
 //  TLNodeType ...
 export class TLNodeType extends TIDNaming {
 	iedType?: TAnyName;
-	lnClass: TLNClassEnum;
+	lnClass!: TLNClassEnum;
 	DO: Array<TDO>;
 
   constructor(...args: any[]) {
     super(...args);
     const opts = args[0];
+    if (opts) {
     
     // Attributes
       this.iedType = opts['iedType'];
     this.lnClass = opts['lnClass'];
 
     // Elements
-     this.DO = opts['DO']?.map(val => new TDO(val)); 
+     this.DO = opts['DO']?.map((val: any) => new TDO(val)); 
 
-  }}
+    }
+  }
+
+  Elements() {
+    return {
+      ...super.Elements(),
+      //...
+      "DO": { construct: TDO, plural: true },
+
+    }
+  }
+
+  Attributes() {
+    return [
+      ...super.Attributes(),
+       { name: 'iedType',  fieldType: 'tAnyName',  },
+ { name: 'lnClass', required: true, fieldType: 'tLNClassEnum',  },
+
+    ]
+  }
+}
 
 // ComplexType 
 //  TDO ...
 export class TDO extends TUnNaming {
-	name: TDataName;
-	type: TName;
+	name!: TDataName;
+	type!: TName;
 	accessControl?: string;
 	transient?: boolean;
 
   constructor(...args: any[]) {
     super(...args);
     const opts = args[0];
+    if (opts) {
     
     // Attributes
       this.name = opts['name'];
@@ -94,40 +152,84 @@ export class TDO extends TUnNaming {
 
     // Elements
     
-  }}
+    }
+  }
+
+  Elements() {
+    return {
+      ...super.Elements(),
+      //...
+      
+    }
+  }
+
+  Attributes() {
+    return [
+      ...super.Attributes(),
+       { name: 'name', required: true, fieldType: 'tDataName',  },
+ { name: 'type', required: true, fieldType: 'tName',  },
+ { name: 'accessControl',  fieldType: 'string',  },
+ { name: 'transient',  fieldType: 'boolean',  },
+
+    ]
+  }
+}
 
 // ComplexType 
 //  TDOType ...
 export class TDOType extends TIDNaming {
 	iedType?: TAnyName;
-	cdc: TCDCEnum;
+	cdc!: TCDCEnum;
 	SDO?: Array<TSDO>;
 	DA?: Array<TDA>;
 
   constructor(...args: any[]) {
     super(...args);
     const opts = args[0];
+    if (opts) {
     
     // Attributes
       this.iedType = opts['iedType'];
     this.cdc = opts['cdc'];
 
     // Elements
-     this.SDO = opts['SDO']?.map(val => new TSDO(val)); 
- this.DA = opts['DA']?.map(val => new TDA(val)); 
+     this.SDO = opts['SDO']?.map((val: any) => new TSDO(val)); 
+ this.DA = opts['DA']?.map((val: any) => new TDA(val)); 
 
-  }}
+    }
+  }
+
+  Elements() {
+    return {
+      ...super.Elements(),
+      //...
+      "SDO": { construct: TSDO, plural: true },
+"DA": { construct: TDA, plural: true },
+
+    }
+  }
+
+  Attributes() {
+    return [
+      ...super.Attributes(),
+       { name: 'iedType',  fieldType: 'tAnyName',  },
+ { name: 'cdc', required: true, fieldType: 'tCDCEnum',  },
+
+    ]
+  }
+}
 
 // ComplexType 
 //  TSDO ...
 export class TSDO extends TUnNaming {
-	name: TSubDataName;
-	type: TName;
+	name!: TSubDataName;
+	type!: TName;
 	count?: TSDOCount;
 
   constructor(...args: any[]) {
     super(...args);
     const opts = args[0];
+    if (opts) {
     
     // Attributes
       this.name = opts['name'];
@@ -136,25 +238,65 @@ export class TSDO extends TUnNaming {
 
     // Elements
     
-  }}
+    }
+  }
+
+  Elements() {
+    return {
+      ...super.Elements(),
+      //...
+      
+    }
+  }
+
+  Attributes() {
+    return [
+      ...super.Attributes(),
+       { name: 'name', required: true, fieldType: 'tSubDataName',  },
+ { name: 'type', required: true, fieldType: 'tName',  },
+ { name: 'count',  fieldType: 'tSDOCount',  },
+
+    ]
+  }
+}
 
 // ComplexType 
 //  TDA ...
 export class TDA extends AgDATrgOp(TAbstractDataAttribute) {
-	fc: TFCEnum;
+	fc!: TFCEnum;
 	ProtNs?: Array<TProtNs>;
 
   constructor(...args: any[]) {
     super(...args);
     const opts = args[0];
+    if (opts) {
     
     // Attributes
       this.fc = opts['fc'];
 
     // Elements
-     this.ProtNs = opts['ProtNs']?.map(val => new TProtNs(val)); 
+     this.ProtNs = opts['ProtNs']?.map((val: any) => new TProtNs(val)); 
 
-  }}
+    }
+  }
+
+  Elements() {
+    return {
+      ...super.Elements(),
+      //...
+      "ProtNs": { construct: TProtNs, plural: true },
+
+    }
+  }
+
+  Attributes() {
+    return [
+      ...super.Attributes(),
+       { name: 'fc', required: true, fieldType: 'tFCEnum',  },
+
+    ]
+  }
+}
 
 // ComplexType 
 //  TDAType ...
@@ -166,15 +308,36 @@ export class TDAType extends TIDNaming {
   constructor(...args: any[]) {
     super(...args);
     const opts = args[0];
+    if (opts) {
     
     // Attributes
       this.iedType = opts['iedType'];
 
     // Elements
-     this.BDA = opts['BDA']?.map(val => new TBDA(val)); 
- this.ProtNs = opts['ProtNs']?.map(val => new TProtNs(val)); 
+     this.BDA = opts['BDA']?.map((val: any) => new TBDA(val)); 
+ this.ProtNs = opts['ProtNs']?.map((val: any) => new TProtNs(val)); 
 
-  }}
+    }
+  }
+
+  Elements() {
+    return {
+      ...super.Elements(),
+      //...
+      "BDA": { construct: TBDA, plural: true },
+"ProtNs": { construct: TProtNs, plural: true },
+
+    }
+  }
+
+  Attributes() {
+    return [
+      ...super.Attributes(),
+       { name: 'iedType',  fieldType: 'tAnyName',  },
+
+    ]
+  }
+}
 
 // ComplexType 
 //  TBDA ...
@@ -183,12 +346,30 @@ export class TBDA extends TAbstractDataAttribute {
   constructor(...args: any[]) {
     super(...args);
     const opts = args[0];
+    if (opts) {
     
     // Attributes
   
     // Elements
     
-  }}
+    }
+  }
+
+  Elements() {
+    return {
+      ...super.Elements(),
+      //...
+      
+    }
+  }
+
+  Attributes() {
+    return [
+      ...super.Attributes(),
+      
+    ]
+  }
+}
 
 // ComplexType 
 //  TEnumType ...
@@ -198,13 +379,32 @@ export class TEnumType extends TIDNaming {
   constructor(...args: any[]) {
     super(...args);
     const opts = args[0];
+    if (opts) {
     
     // Attributes
   
     // Elements
-     this.EnumVal = opts['EnumVal']?.map(val => new TEnumVal(val)); 
+     this.EnumVal = opts['EnumVal']?.map((val: any) => new TEnumVal(val)); 
 
-  }}
+    }
+  }
+
+  Elements() {
+    return {
+      ...super.Elements(),
+      //...
+      "EnumVal": { construct: TEnumVal, plural: true },
+
+    }
+  }
+
+  Attributes() {
+    return [
+      ...super.Attributes(),
+      
+    ]
+  }
+}
 
 // ComplexType 
 //  TProtNs ...
@@ -215,6 +415,7 @@ export class TProtNs extends NodeID {
   constructor(...args: any[]) {
     super(...args);
     const opts = args[0];
+    if (opts) {
     if (typeof opts.Content != "undefined") 
       this.Content = opts.Content; 
     // Attributes
@@ -222,17 +423,36 @@ export class TProtNs extends NodeID {
 
     // Elements
     
-  }}
+    }
+  }
+
+  Elements() {
+    return {
+      ...super.Elements(),
+      //...
+      
+    }
+  }
+
+  Attributes() {
+    return [
+      ...super.Attributes(),
+       { name: 'type',  fieldType: '',  },
+
+    ]
+  }
+}
 
 // ComplexType 
 //  TEnumVal ...
 export class TEnumVal extends AgDesc(NodeID) {
 	Content?: TEnumStringValue; 
-	ord: number;
+	ord!: Number;
 
   constructor(...args: any[]) {
     super(...args);
     const opts = args[0];
+    if (opts) {
     if (typeof opts.Content != "undefined") 
       this.Content = opts.Content; 
     // Attributes
@@ -240,7 +460,25 @@ export class TEnumVal extends AgDesc(NodeID) {
 
     // Elements
     
-  }}
+    }
+  }
+
+  Elements() {
+    return {
+      ...super.Elements(),
+      //...
+      
+    }
+  }
+
+  Attributes() {
+    return [
+      ...super.Attributes(),
+       { name: 'ord', required: true, fieldType: 'number',  },
+
+    ]
+  }
+}
 
 // ComplexType 
 //  TDataTypeTemplates ...
@@ -253,13 +491,35 @@ export class TDataTypeTemplates extends NodeID {
   constructor(...args: any[]) {
     super(...args);
     const opts = args[0];
+    if (opts) {
     
     // Attributes
   
     // Elements
-     this.LNodeType = opts['LNodeType']?.map(val => new TLNodeType(val)); 
- this.DOType = opts['DOType']?.map(val => new TDOType(val)); 
- this.DAType = opts['DAType']?.map(val => new TDAType(val)); 
- this.EnumType = opts['EnumType']?.map(val => new TEnumType(val)); 
+     this.LNodeType = opts['LNodeType']?.map((val: any) => new TLNodeType(val)); 
+ this.DOType = opts['DOType']?.map((val: any) => new TDOType(val)); 
+ this.DAType = opts['DAType']?.map((val: any) => new TDAType(val)); 
+ this.EnumType = opts['EnumType']?.map((val: any) => new TEnumType(val)); 
 
-  }}
+    }
+  }
+
+  Elements() {
+    return {
+      ...super.Elements(),
+      //...
+      "LNodeType": { construct: TLNodeType, plural: true },
+"DOType": { construct: TDOType, plural: true },
+"DAType": { construct: TDAType, plural: true },
+"EnumType": { construct: TEnumType, plural: true },
+
+    }
+  }
+
+  Attributes() {
+    return [
+      ...super.Attributes(),
+      
+    ]
+  }
+}

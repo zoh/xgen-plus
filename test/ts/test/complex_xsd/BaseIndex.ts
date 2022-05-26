@@ -2,6 +2,18 @@
 //
 export type UnsignedInt = number;
 
+export type AttributeDetail = {
+  name: string
+  fixed?: string
+  required?: boolean
+  fieldType?: any
+}
+
+export type ElementDetail = {
+  plural?: boolean
+  construct: Constructor
+}
+
 // NodeID ...
 export class NodeID {
   node_id?: string
@@ -11,10 +23,22 @@ export class NodeID {
       this.node_id = args[0]?.node_id
     }
   }
+
+  Elements(): { [name: string]: ElementDetail } {
+    return {}
+  }
+
+  Attributes(): AttributeDetail[] {
+    return []
+  }
 }
 
+export interface Constructor {
+  new (...args: any[]): any
+  name?: string
+}
 
-export type Constructor = new (...args: any[]) => {};
+//export type Constructor = new (...args: any[]) => {};
 
 export * from "./SCL"
 export * from "./SCL_BaseSimpleTypes"
